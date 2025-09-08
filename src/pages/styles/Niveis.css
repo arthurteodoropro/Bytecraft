@@ -1,0 +1,146 @@
+/* src/pages/styles/Niveis.css */
+
+/* ===== Container principal ===== */
+.niveis-container {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+
+  background-image: url(/images/background_home_desktop.png);
+  background-size: auto 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+/* ===== Botão Voltar ===== */
+.btn-voltar {
+  padding: 10px 20px;
+  text-transform: uppercase;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 500;
+  color: #ff000080; /* vermelho translúcido */
+  text-shadow: none;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: transparent;
+  border: 1px solid #ff000080; /* borda vermelha translúcida */
+  transition: 0.5s ease;
+  user-select: none;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.btn-voltar:hover,
+.btn-voltar:focus {
+  color: #ffffff;
+  background: #ff0000; /* vermelho forte */
+  border: 1px solid #ff0000;
+  text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 20px #ffffff;
+  box-shadow: 0 0 5px #ff0000, 0 0 20px #ff0000, 0 0 50px #ff0000,
+    0 0 100px #ff0000;
+}
+
+/* ===== Grupo de botões ===== */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: center;
+  margin-top: 150px;
+}
+
+/* ===== Estilo base para botões ===== */
+.button-group button {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  color: white;
+  padding: 20px 30px;
+  border-radius: 12px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  border-bottom-width: 4px;
+  min-width: 220px;
+  text-align: center;
+}
+
+/* ===== Botões de níveis ===== */
+.btn-facil {
+  background-color: #22c55e;
+  border: 2px solid #16a34a;
+  border-bottom-color: #15803d;
+}
+
+.btn-facil:hover {
+  filter: brightness(110%);
+  transform: translateY(-1px);
+  border-bottom-width: 6px;
+}
+
+.btn-facil:active {
+  filter: brightness(90%);
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.btn-medio {
+  background-color: #3b82f6;
+  border: 2px solid #2563eb;
+  border-bottom-color: #1d4ed8;
+}
+
+.btn-medio:hover {
+  filter: brightness(110%);
+  transform: translateY(-1px);
+  border-bottom-width: 6px;
+}
+
+.btn-medio:active {
+  filter: brightness(90%);
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.btn-dificil {
+  background-color: #ef4444;
+  border: 2px solid #dc2626;
+  border-bottom-color: #b91c1c;
+}
+
+.btn-dificil:hover {
+  filter: brightness(110%);
+  transform: translateY(-1px);
+  border-bottom-width: 6px;
+}
+
+.btn-dificil:active {
+  filter: brightness(90%);
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 600px) {
+  .button-group {
+    margin-top: 40px;
+  }
+
+  .button-group button {
+    padding: 14px 25px;
+    font-size: 1rem;
+    min-width: 160px;
+  }
+
+  /* Botão voltar mantém tamanho original no mobile */
+  .btn-voltar {
+    padding: 10px 20px;
+    font-size: 17px;
+  }
+}
