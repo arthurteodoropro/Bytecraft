@@ -1,0 +1,25 @@
+spring.application.name=ByteCraft
+spring.datasource.url=jdbc:mysql://localhost:3306/bytecraft?useSSL=false&serverTimezone=UTC
+spring.datasource.username=bytecraft_user
+spring.datasource.password=senha123
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+
+
+
+
+
+-------------------------------------------------------------------
+mysql -u root -p
+Vai pedir a senha, que geralmente é vazia, basta apertar enter.
+
+depois cole o seguinte comando.
+
+CREATE DATABASE bytecraft CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER 'bytecraft_user'@'localhost' IDENTIFIED BY 'senha123';
+
+GRANT ALL PRIVILEGES ON bytecraft.* TO 'bytecraft_user'@'localhost';
+
+FLUSH PRIVILEGES;
