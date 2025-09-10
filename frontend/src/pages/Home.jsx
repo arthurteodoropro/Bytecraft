@@ -1,33 +1,29 @@
+// src/pages/Home.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAluno } from "../api/api.jsx";
+import "./styles/Home.css";
 
-function Home({ setAluno }) {
+function Home() {
   const navigate = useNavigate();
 
-  const handleAluno = async () => {
-    try {
-      // Aqui você pode pedir um apelido ou gerar padrão
-      const apelido = prompt("Digite seu apelido:");
-      if (!apelido) return;
-
-      const aluno = await loginAluno(apelido);
-      setAluno(aluno);
-      navigate("/niveis");
-    } catch (err) {
-      alert("Erro no login: " + err.message);
-    }
+  const handleAluno = () => {
+    navigate("/aluno");
   };
 
   const handleProfessor = () => {
-    alert("Tela do Professor ainda não implementada");
+    navigate("/professor"); // Alterado para navegar para a página Professor
   };
 
   return (
-    <div>
-      <h2>Bem-vindo ao ByteCraft</h2>
-      <button onClick={handleProfessor}>Professor</button>
-      <button onClick={handleAluno}>Aluno</button>
+    <div className="home-container">
+      <div className="button-group">
+        <button className="btn-professor" onClick={handleProfessor}>
+          Professor
+        </button>
+        <button className="btn-aluno" onClick={handleAluno}>
+          Aluno
+        </button>
+      </div>
     </div>
   );
 }

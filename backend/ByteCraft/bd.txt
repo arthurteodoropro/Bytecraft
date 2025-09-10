@@ -11,7 +11,7 @@ spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
 
 
 -------------------------------------------------------------------
-mysql -u root -p
+"mysql -u root -p" ou "sudo mysql -u root" para linux
 Vai pedir a senha, que geralmente é vazia, basta apertar enter.
 
 depois cole o seguinte comando.
