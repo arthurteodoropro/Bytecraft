@@ -1,8 +1,8 @@
-package com.ByteCraft.ByteCraft.controller;
+package com.bytecraft.controller;
 
-import com.ByteCraft.ByteCraft.enums.NivelDificuldadeEnum;
-import com.ByteCraft.ByteCraft.model.Aluno;
-import com.ByteCraft.ByteCraft.repository.AlunoRepository;
+import com.bytecraft.enums.NivelDificuldadeEnum;
+import com.bytecraft.model.Aluno;
+import com.bytecraft.repository.AlunoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

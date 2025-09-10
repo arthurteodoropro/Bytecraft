@@ -1,6 +1,6 @@
-package com.ByteCraft.ByteCraft.model;
+package com.bytecraft.model;
 
-import com.ByteCraft.ByteCraft.enums.NivelDificuldadeEnum;
+import com.bytecraft.enums.NivelDificuldadeEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

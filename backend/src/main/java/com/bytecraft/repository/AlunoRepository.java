@@ -1,6 +1,6 @@
-package com.ByteCraft.ByteCraft.repository;
+package com.bytecraft.repository;
 
-import com.ByteCraft.ByteCraft.model.Aluno;
+import com.bytecraft.model.Aluno;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -1,4 +1,4 @@
-package com.ByteCraft.ByteCraft.enums;
+package com.bytecraft.enums;
 
 
 public enum NivelDificuldadeEnum {

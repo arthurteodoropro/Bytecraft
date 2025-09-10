@@ -1,4 +1,4 @@
-package com.ByteCraft.ByteCraft.model;
+package com.bytecraft.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
