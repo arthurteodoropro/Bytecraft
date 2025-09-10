@@ -1,10 +1,10 @@
-package com.ByteCraft.ByteCraft;
+package com.bytecraft;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ByteCraftApplicationTests {
+class BytecraftApplicationTests {
 
 	@Test
 	void contextLoads() {

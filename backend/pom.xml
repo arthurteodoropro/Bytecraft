@@ -8,11 +8,11 @@
 		<version>3.5.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.ByteCraft</groupId>
-	<artifactId>ByteCraft</artifactId>
+	<groupId>com</groupId>
+	<artifactId>bytecraft</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ByteCraft</name>
-	<description>Demo project for Spring Boot</description>
+	<name>bytecraft</name>
+	<description>PI2025-Equipe 5° ano.</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -33,6 +33,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
