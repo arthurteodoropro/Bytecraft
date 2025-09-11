@@ -23,7 +23,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url(public/images/background_modo.png);
+  background-image: url(/images/background_modo.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -181,7 +181,7 @@
   
   /* Ajuste de background para mobile */
   .fases-container::before {
-    background-image: url(public/images/background_modo.png);
+    background-image: url(/images/background_modo.png);
   }
 }
 
