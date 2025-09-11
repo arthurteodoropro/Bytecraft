@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 8081, // Mantém na 8081 (conforme configurado no Spring Security)
+    port: 3030, // Mantém na 8081 (conforme configurado no Spring Security)
     open: true,
     proxy: {
       '/api': {
