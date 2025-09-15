@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import java.util.Set;
 
+
+//Classe do Pablo, já adaptada.
 @Entity
 @Getter
 @Setter

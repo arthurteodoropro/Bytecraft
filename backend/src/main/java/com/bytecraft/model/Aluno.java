@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+
+//Classe do Pablo já adaptada.
 @Entity
 @Getter
 @Setter
