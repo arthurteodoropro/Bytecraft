@@ -1,7 +1,11 @@
 package com.bytecraft.controller;
 
 import com.bytecraft.model.Professor;
+import com.bytecraft.model.Sala;
+import com.bytecraft.dto.ProfessorRequest;
 import com.bytecraft.service.ProfessorService;
+import com.bytecraft.service.SalaService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,25 +18,29 @@ import java.util.Optional;
 public class ProfessorController {
 
     private final ProfessorService professorService;
+    private final SalaService salaService; // injetar aqui
 
-    // Endpoint para cadastrar professor
     @PostMapping("/cadastrar")
-    public ResponseEntity<Professor> cadastrar(@RequestBody Professor professor) {
-        String nomeTurma = professor.getSala() != null ? professor.getSala().getNomeTurma() : null;
+    public ResponseEntity<Professor> cadastrar(@RequestBody ProfessorRequest request) {
+        Sala sala = salaService.getSalaById(request.getSalaId())
+                .orElseThrow(() -> new IllegalArgumentException("Sala não encontrada"));
 
-        Professor cadastrado = professorService.cadastrarProfessor(professor, nomeTurma);
+        Professor professor = new Professor();
+        professor.setNomeDeUsuario(request.getNomeDeUsuario());
+        professor.setSenha(request.getSenha());
+        professor.setSala(sala);
+
+        Professor cadastrado = professorService.cadastrarProfessor(professor, sala.getNomeTurma());
         return ResponseEntity.ok(cadastrado);
     }
 
-    // Endpoint para autenticar professor
     @PostMapping("/autenticar")
     public ResponseEntity<Professor> autenticar(@RequestBody Professor professor) {
-        String nomeDeUsuario = professor.getNomeDeUsuario();
-        String senha = professor.getSenha();
-
-        Optional<Professor> professorOpt = professorService.autenticarProfessor(nomeDeUsuario, senha);
-
+        Optional<Professor> professorOpt = professorService.autenticarProfessor(
+                professor.getNomeDeUsuario(),
+                professor.getSenha()
+        );
         return professorOpt.map(ResponseEntity::ok)
-                        .orElseGet(() -> ResponseEntity.status(401).build());
+                .orElseGet(() -> ResponseEntity.status(401).build());
     }
 }

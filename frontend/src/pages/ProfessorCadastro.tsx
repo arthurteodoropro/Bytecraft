@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { api, ApiProfessor } from '../api/api';
+import { api, ApiProfessor, ApiSala } from '../api/api';
 
 const ProfessorCadastro: React.FC = () => {
   const [nome, setNome] = useState('');
@@ -16,18 +16,20 @@ const ProfessorCadastro: React.FC = () => {
     try {
       setLoading(true);
 
-      // ✅ Cadastra o professor (backend já cria e vincula a sala)
-      const professor: ApiProfessor = await api.cadastrarProfessor(nome, senha, nomeTurma);
+      // 1️⃣ Cria a sala
+      const sala: ApiSala = await api.cadastrarSala(nomeTurma);
 
-      // Acessa a sala vinculada retornada pelo backend
-      const nomeSala = professor.sala?.nomeTurma ?? 'não disponível';
-      const codigoSala = professor.sala?.codigo ?? 'não disponível';
-
-      alert(
-        `Cadastro realizado com sucesso!\nNome da Turma: ${nomeSala}\nCódigo da Sala: ${codigoSala}`
+      // 2️⃣ Cadastra o professor usando o id da sala
+      const professor: ApiProfessor = await api.cadastrarProfessor(
+        nome,
+        senha,
+        sala.id
       );
 
-      // Limpa campos
+      alert(
+        `Cadastro realizado!\nProfessor: ${professor.nomeDeUsuario}\nTurma: ${sala.nomeTurma}\nCódigo: ${sala.codigo}`
+      );
+
       setNome('');
       setSenha('');
       setNomeTurma('');

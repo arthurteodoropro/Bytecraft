@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:8080/api'; // endereço completo do backend
 
 export interface ApiAluno {
   apelido: string;
@@ -9,7 +9,7 @@ export interface ApiAluno {
 export interface ApiSala {
   id: number;
   nomeTurma: string;
-  codigo: string;
+  codigo: number; // JS não tem byte, usamos number
 }
 
 export interface ApiProfessor {
@@ -26,12 +26,10 @@ export const loginAluno = async (apelido: string): Promise<ApiAluno> => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ apelido }),
   });
-
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || `Erro no login: ${response.status}`);
   }
-
   return await response.json();
 };
 
@@ -43,30 +41,51 @@ export const getNiveis = async (): Promise<string[]> => {
 };
 
 export const registrarNivel = async (apelido: string, nivel: string): Promise<ApiAluno> => {
-  const response = await fetch(`${API_BASE_URL}/alunos/${apelido}/registrarNivel`, {
+  const response = await fetch(`${API_BASE_URL}/alunos/${encodeURIComponent(apelido)}/registrarNivel`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ nivel: nivel.toUpperCase() }),
   });
-
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || `Erro ao atualizar nível: ${response.status}`);
+  }
+  return await response.json();
+};
+
+export const vincularAlunoASala = async (apelido: string, codigoSala: string): Promise<ApiAluno> => {
+  const response = await fetch(
+    `${API_BASE_URL}/salas/vincular?apelido=${encodeURIComponent(apelido)}&codigoSala=${encodeURIComponent(codigoSala)}`,
+    { method: 'POST' }
+  );
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Erro ao vincular aluno à sala: ${response.status}`);
+  }
+  return await response.json();
+};
+
+// ===== SALA =====
+export const cadastrarSala = async (nomeTurma: string): Promise<ApiSala> => {
+  const response = await fetch(`${API_BASE_URL}/salas/criar?nomeTurma=${encodeURIComponent(nomeTurma)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Erro ao cadastrar sala: ${response.status}`);
   }
 
   return await response.json();
 };
 
-export const vincularAlunoASala = async (apelido: string, codigoSala: string): Promise<ApiAluno> => {
-  const response = await fetch(`${API_BASE_URL}/salas/vincular?apelido=${encodeURIComponent(apelido)}&codigoSala=${encodeURIComponent(codigoSala)}`, {
-    method: 'POST',
-  });
-
+export const listarSalas = async (): Promise<ApiSala[]> => {
+  const response = await fetch(`${API_BASE_URL}/salas/listar`);
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || `Erro ao vincular aluno à sala: ${response.status}`);
+    throw new Error(errorText || `Erro ao listar salas: ${response.status}`);
   }
-
   return await response.json();
 };
 
@@ -74,12 +93,12 @@ export const vincularAlunoASala = async (apelido: string, codigoSala: string): P
 export const cadastrarProfessor = async (
   nomeDeUsuario: string,
   senha: string,
-  nomeTurma: string
+  idSala: number
 ): Promise<ApiProfessor> => {
   const response = await fetch(`${API_BASE_URL}/professores/cadastrar`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nomeDeUsuario, senha, nomeTurma }),
+    body: JSON.stringify({ nomeDeUsuario, senha, salaId: idSala }),
   });
 
   if (!response.ok) {
@@ -107,10 +126,17 @@ export const loginProfessor = async (nomeDeUsuario: string, senha: string): Prom
 
 // ==== objeto exportado ====
 export const api = {
+  // Alunos
   loginAluno,
   getNiveis,
   registrarNivel,
   vincularAlunoASala,
+
+  // Salas
+  listarSalas,
+  cadastrarSala,
+
+  // Professores
   cadastrarProfessor,
   loginProfessor,
 };

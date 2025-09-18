@@ -8,20 +8,19 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Professor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "nome_de_usuario", nullable = false)
     private String nomeDeUsuario;
 
-    @Column(nullable = false)
+    @Column(name = "senha", nullable = false)
     private String senha;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "sala_id")
+    @ManyToOne
+    @JoinColumn(name = "sala_id", nullable = false)
     private Sala sala;
 }
