@@ -1,24 +1,23 @@
 package com.bytecraft.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.Set;
-
-
-//Classe do Pablo, já adaptada.
 @Entity
-@Getter
-@Setter
+@Table(name = "salas")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Sala {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private byte codigoUnico;
+    @Column(nullable = false, unique = true)
+    private Byte codigo;  // tipo Byte
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Aluno> alunos;
+    @Column(nullable = false)
+    private String nomeTurma;
 }

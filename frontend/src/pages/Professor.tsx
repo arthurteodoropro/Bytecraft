@@ -8,14 +8,25 @@ const Professor: React.FC = () => {
     navigate("/");
   };
 
+  const irParaCadastro = () => {
+    navigate("/professor/cadastro");
+  };
+
+  const irParaLogin = () => {
+    navigate("/professor/login");
+  };
+
   return (
     <div className="professor-isolated-container">
       <button className="professor-btn-voltar" onClick={handleVoltar}>
-        <img src="src/assets/bottons/botao_voltar.png" alt="Voltar" />
+        <img src="src/assets/buttons/botao_voltar.png" alt="Voltar" />
       </button>
+
       <div className="professor-content">
+        <h2>Área do Professor</h2>
         <div className="professor-options">
-          {/* Opções serão adicionadas aqui posteriormente */}
+          <button onClick={irParaCadastro}>Cadastrar Professor</button>
+          <button onClick={irParaLogin}>Login Professor</button>
         </div>
       </div>
     </div>

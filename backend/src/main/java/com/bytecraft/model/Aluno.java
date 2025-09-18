@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-
-//Classe do Pablo já adaptada.
 @Entity
 @Getter
 @Setter
@@ -17,4 +15,8 @@ public class Aluno {
 
     @Enumerated(EnumType.STRING)
     private NivelDificuldadeEnum nivel;
+
+    @ManyToOne
+    @JoinColumn(name = "sala_id")
+    private Sala sala;
 }

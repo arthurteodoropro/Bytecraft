@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAluno } from "../api/api";
+import { loginAluno, vincularAlunoASala } from "../api/api";
 import type { Aluno as AlunoType } from "../types";
 import "./styles/Aluno.css";
 
@@ -11,7 +11,7 @@ interface AlunoProps {
 const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
   const navigate = useNavigate();
   const [apelido, setApelido] = useState("");
-  const [turma, setTurma] = useState("");
+  const [codigoSala, setCodigoSala] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleVoltar = () => {
@@ -23,17 +23,23 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
       setLoading(true);
       const apelidoParaEnviar = apelido.trim() || "Anônimo";
       
-      const alunoData = await loginAluno(apelidoParaEnviar, turma.trim() || undefined);
+      // Faz login ou criação do aluno
+      const alunoData = await loginAluno(apelidoParaEnviar);
       
+      // Se código da sala informado, vincula aluno à sala
+      if (codigoSala.trim()) {
+        await vincularAlunoASala(apelidoParaEnviar, codigoSala.trim());
+      }
+
       setAluno({
         apelido: alunoData.apelido,
         nivel: alunoData.nivel,
-        turma: turma.trim() || undefined
+        turma: codigoSala.trim() || undefined,
       });
       
       navigate("/niveis");
     } catch (err) {
-      alert("Erro no login: " + (err as Error).message);
+      alert("Erro no login ou vinculação: " + (err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -51,7 +57,6 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
         <img src="src/assets/bottons/botao_voltar.png" alt="Voltar" />
       </button>
       <div className="aluno-content">
-        
         <input
           type="text"
           placeholder="Seu apelido (opcional)..."
@@ -61,17 +66,15 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
           onKeyPress={handleKeyPress}
           disabled={loading}
         />
-        
         <input
           type="text"
-          placeholder="Sua turma (opcional)..."
-          value={turma}
-          onChange={(e) => setTurma(e.target.value)}
+          placeholder="Código da sala (opcional)..."
+          value={codigoSala}
+          onChange={(e) => setCodigoSala(e.target.value)}
           className="aluno-turma-input"
           onKeyPress={handleKeyPress}
           disabled={loading}
         />
-        
         <button 
           className="aluno-btn-comecar" 
           onClick={handleComecar}
