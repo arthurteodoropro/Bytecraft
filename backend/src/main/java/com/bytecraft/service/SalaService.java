@@ -19,17 +19,22 @@ public class SalaService {
         return (byte) new Random().nextInt(100); // 0-99
     }
 
-    public Sala criaSala(String nomeTurma) {
-        Sala sala = Sala.builder()
-                .nomeTurma(nomeTurma)
-                .codigo(geraCodigo())
-                .build();
-        Sala saved = salaRepository.save(sala);
-        salaRepository.flush(); // garante insert imediato
-        return saved;
+    // Novo método: busca por nome
+    public Optional<Sala> getSalaByNome(String nomeTurma) {
+        return salaRepository.findByNomeTurma(nomeTurma);
     }
 
-    public Optional<Sala> getSalaById(Long id) {
-    return salaRepository.findById(id);
-}
+    // Modificado para não criar duplicada
+    public Sala criaSala(String nomeTurma) {
+        return salaRepository.findByNomeTurma(nomeTurma)
+                .orElseGet(() -> {
+                    Sala nova = Sala.builder()
+                            .nomeTurma(nomeTurma)
+                            .codigo(geraCodigo())
+                            .build();
+                    return salaRepository.save(nova);
+                });
+    }
+
+    public Optional<Sala> getSalaById(Long id) { return salaRepository.findById(id); }
 }

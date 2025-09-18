@@ -16,18 +16,14 @@ public class ProfessorService {
 
     private final ProfessorRepository professorRepository;
     private final PasswordEncoder passwordEncoder;
-    private final SalaService salaService;
 
     @Transactional
-    public Professor cadastrarProfessor(Professor professor, String nomeTurma) {
-        if (nomeTurma != null && !nomeTurma.isBlank()) {
-            Sala sala = salaService.criaSala(nomeTurma);
-            professor.setSala(sala);
-        }
-
+    public Professor cadastrarProfessor(Professor professor) {
         professor.setSenha(passwordEncoder.encode(professor.getSenha()));
         return professorRepository.save(professor);
     }
+    
+
 
     public Optional<Professor> autenticarProfessor(String nomeDeUsuario, String senha) {
         return professorRepository.findByNomeDeUsuario(nomeDeUsuario)

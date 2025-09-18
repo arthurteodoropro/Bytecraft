@@ -6,5 +6,7 @@ import lombok.Data;
 public class ProfessorRequest {
     private String nomeDeUsuario;
     private String senha;
-    private Long salaId; // recebe o id da sala
+    private Long salaId;
+    private String nomeTurma; // <<< adicione isto
+    // recebe o id da sala
 }

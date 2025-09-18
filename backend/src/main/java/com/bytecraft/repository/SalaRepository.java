@@ -9,4 +9,6 @@ public interface SalaRepository extends JpaRepository<Sala, Long> {
 
     // busca pelo código da sala (agora do tipo Byte)
     Optional<Sala> findByCodigo(Byte codigo);
+    Optional<Sala> findByNomeTurma(String nomeTurma); // <<< adicione isto
+
 }

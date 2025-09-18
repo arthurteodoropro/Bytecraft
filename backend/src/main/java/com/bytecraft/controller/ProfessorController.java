@@ -30,9 +30,11 @@ public class ProfessorController {
         professor.setSenha(request.getSenha());
         professor.setSala(sala);
 
-        Professor cadastrado = professorService.cadastrarProfessor(professor, sala.getNomeTurma());
+        Professor cadastrado = professorService.cadastrarProfessor(professor); // <<< sem criar sala
         return ResponseEntity.ok(cadastrado);
     }
+
+
 
     @PostMapping("/autenticar")
     public ResponseEntity<Professor> autenticar(@RequestBody Professor professor) {
