@@ -1,7 +1,6 @@
 package com.bytecraft.service;
 
 import com.bytecraft.model.Professor;
-import com.bytecraft.model.Sala;
 import com.bytecraft.repository.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
