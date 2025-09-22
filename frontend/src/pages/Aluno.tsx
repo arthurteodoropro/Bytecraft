@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAluno} from "../api/api";
+import { loginAluno } from "../api/api"; // loginAluno agora recebe apelido + sala
 import type { Aluno as AlunoType } from "../types";
 import "./styles/Aluno.css";
 
@@ -14,33 +14,22 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
   const [nomeTurma, setNomeTurma] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleVoltar = () => {
-    navigate("/");
-  };
+  const handleVoltar = () => navigate("/");
 
   const handleComecar = async () => {
+    if (!nome.trim()) return alert("Apelido é obrigatório");
+    if (!nomeTurma.trim()) return alert("Código da sala é obrigatório");
+
     try {
       setLoading(true);
-  
-      if (!nome.trim()) {
-        alert("Apelido é obrigatório");
-        return;
-      }
-  
-      if (!nomeTurma.trim()) {
-        alert("Código da sala é obrigatório");
-        return;
-      }
-  
-      // Faz login + cadastro obrigatoriamente com apelido + sala
       const alunoData = await loginAluno(nome.trim(), nomeTurma.trim());
-  
+
       setAluno({
         apelido: alunoData.apelido,
         nivel: alunoData.nivel,
         turma: nomeTurma.trim(),
       });
-  
+
       navigate("/niveis");
     } catch (err) {
       alert("Erro no login ou vinculação: " + (err as Error).message);
@@ -50,9 +39,7 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !loading) {
-      handleComecar();
-    }
+    if (e.key === "Enter" && !loading) handleComecar();
   };
 
   return (
@@ -60,6 +47,7 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
       <button className="aluno-btn-voltar" onClick={handleVoltar}>
         <img src="src/assets/bottons/botao_voltar.png" alt="Voltar" />
       </button>
+
       <div className="aluno-content">
         <div className="aluno-input-group">
           <label className="aluno-input-label">NOME</label>
@@ -73,7 +61,7 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
             disabled={loading}
           />
         </div>
-        
+
         <div className="aluno-input-group">
           <label className="aluno-input-label">NOME DA TURMA</label>
           <input
@@ -86,13 +74,13 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
             disabled={loading}
           />
         </div>
-        
-        <button 
-          className="aluno-btn-comecar" 
+
+        <button
+          className="aluno-btn-comecar"
           onClick={handleComecar}
           disabled={loading}
         >
-          {loading ? 'Carregando...' : 'COMEÇAR'}
+          {loading ? "Carregando..." : "COMEÇAR"}
         </button>
       </div>
     </div>
