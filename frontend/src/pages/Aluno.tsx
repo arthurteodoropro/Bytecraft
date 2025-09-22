@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAluno, vincularAlunoASala } from "../api/api";
+import { loginAluno} from "../api/api";
 import type { Aluno as AlunoType } from "../types";
 import "./styles/Aluno.css";
 
@@ -21,22 +21,26 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
   const handleComecar = async () => {
     try {
       setLoading(true);
-      const nomeParaEnviar = nome.trim() || "Anônimo";
-      
-      // Faz login ou criação do aluno
-      const alunoData = await loginAluno(nomeParaEnviar);
-      
-      // Se nome da turma informado, vincula aluno à turma
-      if (nomeTurma.trim()) {
-        await vincularAlunoASala(nomeParaEnviar, nomeTurma.trim());
+  
+      if (!nome.trim()) {
+        alert("Apelido é obrigatório");
+        return;
       }
-
+  
+      if (!nomeTurma.trim()) {
+        alert("Código da sala é obrigatório");
+        return;
+      }
+  
+      // Faz login + cadastro obrigatoriamente com apelido + sala
+      const alunoData = await loginAluno(nome.trim(), nomeTurma.trim());
+  
       setAluno({
         apelido: alunoData.apelido,
         nivel: alunoData.nivel,
-        turma: nomeTurma.trim() || undefined,
+        turma: nomeTurma.trim(),
       });
-      
+  
       navigate("/niveis");
     } catch (err) {
       alert("Erro no login ou vinculação: " + (err as Error).message);

@@ -20,18 +20,21 @@ export interface ApiProfessor {
 }
 
 // ===== ALUNO =====
-export const loginAluno = async (apelido: string): Promise<ApiAluno> => {
+export const loginAluno = async (apelido: string, codigoSala: string): Promise<ApiAluno> => {
   const response = await fetch(`${API_BASE_URL}/alunos/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ apelido }),
+    body: JSON.stringify({ apelido, codigoSala }),
   });
+
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || `Erro no login: ${response.status}`);
   }
+
   return await response.json();
 };
+
 
 export const getNiveis = async (): Promise<string[]> => {
   const response = await fetch(`${API_BASE_URL}/alunos/niveis`);

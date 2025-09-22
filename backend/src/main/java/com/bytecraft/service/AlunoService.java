@@ -17,33 +17,28 @@ public class AlunoService {
     private final SalaRepository salaRepository;
 
     public Optional<Aluno> vincularAlunoASala(String apelido, Byte codigoSala) {
-        Optional<Aluno> alunoOpt = alunoRepository.findById(apelido);
-        Optional<Sala> salaOpt = salaRepository.findByCodigo(codigoSala);
+        Aluno aluno = alunoRepository.findById(apelido).orElseGet(() -> {
+            Aluno novo = new Aluno();
+            novo.setApelido(apelido);
+            return alunoRepository.save(novo);
+        });
 
-        if (alunoOpt.isEmpty() || salaOpt.isEmpty()) {
-            return Optional.empty(); // aluno ou sala não existe
-        }
+        Sala sala = salaRepository.findByCodigo(codigoSala)
+                .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 
-        Aluno aluno = alunoOpt.get();
-        Sala sala = salaOpt.get();
-
-        if (aluno.getSala() != null) {
-            if (aluno.getSala().getCodigo().equals(codigoSala)) {
-                // aluno já está vinculado a esta sala, retorna normalmente
-                return Optional.of(aluno);
-            } else {
-                // aluno já está vinculado a outra sala, não permite
-                throw new IllegalStateException("Aluno já está vinculado a outra sala.");
-            }
-        }
-
-        // aluno ainda não está vinculado a nenhuma sala
         aluno.setSala(sala);
         alunoRepository.save(aluno);
+
         return Optional.of(aluno);
     }
 
     public void registraNivel(Aluno aluno) {
         alunoRepository.atualizaNivel(aluno);
+    }
+
+    // Novo método público
+    public Aluno findAluno(String apelido) {
+        return alunoRepository.findById(apelido)
+                .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
     }
 }

@@ -11,12 +11,12 @@ import lombok.Setter;
 public class Aluno {
 
     @Id
-    private String apelido;
+    private String apelido;  // apelido agora é único globalmente
 
     @Enumerated(EnumType.STRING)
     private NivelDificuldadeEnum nivel;
 
     @ManyToOne
     @JoinColumn(name = "sala_id")
-    private Sala sala;
+    private Sala sala;  // sala continua, mas apelido não depende da sala
 }

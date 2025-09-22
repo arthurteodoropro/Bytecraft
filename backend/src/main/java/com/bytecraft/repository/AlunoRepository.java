@@ -16,5 +16,4 @@ public interface AlunoRepository extends JpaRepository<Aluno, String> {
     @Query("UPDATE Aluno a SET a.nivel = :#{#aluno.nivel} WHERE a.apelido = :#{#aluno.apelido}")
     int atualizaNivel(Aluno aluno);
 
-    // salvaAluno já é herdado pelo save()
 }

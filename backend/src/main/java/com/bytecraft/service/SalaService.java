@@ -37,4 +37,9 @@ public class SalaService {
     }
 
     public Optional<Sala> getSalaById(Long id) { return salaRepository.findById(id); }
+
+    public Optional<Sala> getSalaByCodigo(Byte codigo) {
+        return salaRepository.findByCodigo(codigo);
+    }
+    
 }
