@@ -1,5 +1,5 @@
-/* ===== ESTILOS ISOLADOS PARA A PÁGINA PROFESSOR ===== */
-.professor-isolated-container {
+/* ===== ESTILOS ISOLADOS PARA A PÁGINA PROFESSOR CADASTRO ===== */
+.professor-cadastro-isolated-container {
   height: 100vh;
   width: 100%;
   display: flex;
@@ -13,22 +13,22 @@
   font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive;
 }
 
-.professor-isolated-container::before {
+.professor-cadastro-isolated-container::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url(src/assets/backgrounds/background_professor.png);
+  background-image: url(frontend/src/assets/backgrounds/background_cadastro.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   z-index: -1;
 }
 
-/* ===== BOTÃO VOLTAR ===== */
-.professor-btn-voltar {
+/* ===== BOTÃO VOLTAR (IGUAL AO DA PÁGINA PROFESSOR) ===== */
+.professor-cadastro-btn-voltar {
   position: absolute;
   top: 20px;
   left: 20px;
@@ -39,35 +39,35 @@
   z-index: 10;
 }
 
-.professor-btn-voltar img {
+.professor-cadastro-btn-voltar img {
   width: 50px;
   height: 50px;
   object-fit: contain;
   transition: transform 0.2s ease;
 }
 
-.professor-btn-voltar:hover img {
+.professor-cadastro-btn-voltar:hover img {
   transform: scale(1.1);
 }
 
-.professor-btn-voltar:active img {
+.professor-cadastro-btn-voltar:active img {
   transform: scale(0.95);
 }
 
 /* ===== CONTEÚDO PRINCIPAL ===== */
-.professor-content {
+.professor-cadastro-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
   width: 100%;
   max-width: 300px;
-  margin-top: 220px;
-  padding-bottom: 20px;
+  margin-top: 120px;
+  padding-bottom: 40px;
 }
 
 /* ===== GRUPO DE INPUTS ===== */
-.professor-input-group {
+.professor-cadastro-input-group {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -76,7 +76,7 @@
 }
 
 /* ===== LABEL DOS INPUTS ===== */
-.professor-input-label {
+.professor-cadastro-input-label {
   font-family: "Impact", "Arial Black", sans-serif;
   font-size: 1.2rem;
   color: white;
@@ -86,7 +86,9 @@
 }
 
 /* ===== CAMPOS DE ENTRADA ===== */
-.professor-nome-input, .professor-senha-input {
+.professor-cadastro-nome-input, 
+.professor-cadastro-senha-input, 
+.professor-cadastro-turma-input {
   width: 100%;
   padding: 12px 16px;
   font-size: 1rem;
@@ -103,7 +105,9 @@
   font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive;
 }
 
-.professor-nome-input:focus, .professor-senha-input:focus {
+.professor-cadastro-nome-input:focus, 
+.professor-cadastro-senha-input:focus, 
+.professor-cadastro-turma-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 
@@ -113,52 +117,23 @@
   transform: translateY(-2px);
 }
 
-.professor-nome-input::placeholder, .professor-senha-input::placeholder {
+.professor-cadastro-nome-input::placeholder, 
+.professor-cadastro-senha-input::placeholder, 
+.professor-cadastro-turma-input::placeholder {
   color: #9ca3af;
   text-align: center;
   font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive;
 }
 
-/* ===== BOTÃO ENTRAR (VERDE) ===== */
-.professor-btn-entrar {
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  background-color: #22c55e;
-  color: white;
-  padding: 14px 20px;
-  border-radius: 14px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border-style: solid;
-  border-width: 3px;
-  border-color: #16a34a;
-  border-bottom-color: #14532d;
-  border-bottom-width: 6px;
-  width: 100%;
-  text-align: center;
-  box-sizing: border-box;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  font-family: "Impact", "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive;
-  letter-spacing: 1px;
-  margin-top: 10px;
-}
-
-.professor-btn-entrar:hover {
-  filter: brightness(110%);
-  transform: translateY(-3px);
-  border-bottom-width: 8px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-}
-
-.professor-btn-entrar:active {
-  filter: brightness(90%);
-  transform: translateY(2px);
-  border-bottom-width: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+.professor-cadastro-nome-input:disabled, 
+.professor-cadastro-senha-input:disabled, 
+.professor-cadastro-turma-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 /* ===== BOTÃO CADASTRAR (AZUL) ===== */
-.professor-btn-cadastrar {
+.professor-cadastro-btn-cadastrar {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   background-color: #3b82f6;
@@ -178,95 +153,113 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   font-family: "Impact", "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive;
   letter-spacing: 1px;
+  margin-top: 10px;
 }
 
-.professor-btn-cadastrar:hover {
+.professor-cadastro-btn-cadastrar:hover:not(:disabled) {
   filter: brightness(110%);
   transform: translateY(-3px);
   border-bottom-width: 8px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
-.professor-btn-cadastrar:active {
+.professor-cadastro-btn-cadastrar:active:not(:disabled) {
   filter: brightness(90%);
   transform: translateY(2px);
   border-bottom-width: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
+.professor-cadastro-btn-cadastrar:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.professor-cadastro-btn-cadastrar:disabled:hover {
+  filter: none;
+  transform: none;
+  border-bottom-width: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 768px) {
-  .professor-isolated-container {
+  .professor-cadastro-isolated-container {
     padding-top: 70px;
   }
   
-  .professor-btn-voltar {
+  .professor-cadastro-btn-voltar {
     top: 15px;
     left: 15px;
   }
   
-  .professor-btn-voltar img {
+  .professor-cadastro-btn-voltar img {
     width: 45px;
     height: 45px;
   }
   
-  .professor-content {
+  .professor-cadastro-content {
     gap: 18px;
-    margin-top: 150px;
+    margin-top: 100px;
     max-width: 280px;
   }
   
-  .professor-input-label {
+  .professor-cadastro-input-label {
     font-size: 1.1rem;
   }
   
-  .professor-nome-input, .professor-senha-input {
+  .professor-cadastro-nome-input, 
+  .professor-cadastro-senha-input, 
+  .professor-cadastro-turma-input {
     padding: 11px 15px;
     font-size: 0.95rem;
   }
   
-  .professor-btn-entrar, .professor-btn-cadastrar {
+  .professor-cadastro-btn-cadastrar {
     padding: 13px 18px;
     font-size: 1.1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .professor-isolated-container {
+  .professor-cadastro-isolated-container {
     padding-top: 60px;
   }
   
-  .professor-btn-voltar {
+  .professor-cadastro-btn-voltar {
     top: 12px;
     left: 12px;
   }
   
-  .professor-btn-voltar img {
+  .professor-cadastro-btn-voltar img {
     width: 40px;
     height: 40px;
   }
   
-  .professor-content {
+  .professor-cadastro-content {
     gap: 16px;
-    margin-top: 130px;
+    margin-top: 90px;
     max-width: 260px;
   }
   
-  .professor-input-group {
+  .professor-cadastro-input-group {
     gap: 5px;
   }
   
-  .professor-input-label {
+  .professor-cadastro-input-label {
     font-size: 1.0rem;
   }
   
-  .professor-nome-input, .professor-senha-input {
+  .professor-cadastro-nome-input, 
+  .professor-cadastro-senha-input, 
+  .professor-cadastro-turma-input {
     padding: 10px 14px;
     font-size: 0.9rem;
     border-radius: 12px;
   }
   
-  .professor-btn-entrar, .professor-btn-cadastrar {
+  .professor-cadastro-btn-cadastrar {
     padding: 12px 16px;
     font-size: 1.0rem;
     border-radius: 12px;
@@ -274,50 +267,52 @@
     border-bottom-width: 5px;
   }
   
-  .professor-btn-entrar:hover, .professor-btn-cadastrar:hover {
+  .professor-cadastro-btn-cadastrar:hover:not(:disabled) {
     border-bottom-width: 7px;
   }
   
-  .professor-btn-entrar:active, .professor-btn-cadastrar:active {
+  .professor-cadastro-btn-cadastrar:active:not(:disabled) {
     border-bottom-width: 3px;
   }
 }
 
 /* ===== MOBILE LANDSCAPE ===== */
 @media (max-width: 900px) and (orientation: landscape) {
-  .professor-isolated-container {
+  .professor-cadastro-isolated-container {
     padding-top: 30px;
   }
   
-  .professor-content {
+  .professor-cadastro-content {
     gap: 10px;
-    margin-top: 80px;
+    margin-top: 70px;
     max-width: 240px;
     padding-bottom: 10px;
   }
   
-  .professor-input-label {
+  .professor-cadastro-input-label {
     font-size: 0.9rem;
   }
   
-  .professor-nome-input, .professor-senha-input {
+  .professor-cadastro-nome-input, 
+  .professor-cadastro-senha-input, 
+  .professor-cadastro-turma-input {
     padding: 8px 12px;
     font-size: 0.8rem;
     border-radius: 10px;
   }
   
-  .professor-btn-entrar, .professor-btn-cadastrar {
+  .professor-cadastro-btn-cadastrar {
     padding: 9px 14px;
     font-size: 0.9rem;
     border-radius: 10px;
     border-bottom-width: 4px;
   }
   
-  .professor-btn-entrar:hover, .professor-btn-cadastrar:hover {
+  .professor-cadastro-btn-cadastrar:hover:not(:disabled) {
     border-bottom-width: 6px;
   }
   
-  .professor-btn-entrar:active, .professor-btn-cadastrar:active {
+  .professor-cadastro-btn-cadastrar:active:not(:disabled) {
     border-bottom-width: 2px;
   }
 }

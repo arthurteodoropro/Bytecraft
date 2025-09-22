@@ -10,8 +10,8 @@ interface AlunoProps {
 
 const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
   const navigate = useNavigate();
-  const [apelido, setApelido] = useState("");
-  const [codigoSala, setCodigoSala] = useState("");
+  const [nome, setNome] = useState("");
+  const [nomeTurma, setNomeTurma] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleVoltar = () => {
@@ -21,20 +21,20 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
   const handleComecar = async () => {
     try {
       setLoading(true);
-      const apelidoParaEnviar = apelido.trim() || "Anônimo";
+      const nomeParaEnviar = nome.trim() || "Anônimo";
       
       // Faz login ou criação do aluno
-      const alunoData = await loginAluno(apelidoParaEnviar);
+      const alunoData = await loginAluno(nomeParaEnviar);
       
-      // Se código da sala informado, vincula aluno à sala
-      if (codigoSala.trim()) {
-        await vincularAlunoASala(apelidoParaEnviar, codigoSala.trim());
+      // Se nome da turma informado, vincula aluno à turma
+      if (nomeTurma.trim()) {
+        await vincularAlunoASala(nomeParaEnviar, nomeTurma.trim());
       }
 
       setAluno({
         apelido: alunoData.apelido,
         nivel: alunoData.nivel,
-        turma: codigoSala.trim() || undefined,
+        turma: nomeTurma.trim() || undefined,
       });
       
       navigate("/niveis");
@@ -57,30 +57,38 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
         <img src="src/assets/bottons/botao_voltar.png" alt="Voltar" />
       </button>
       <div className="aluno-content">
-        <input
-          type="text"
-          placeholder="Seu apelido (opcional)..."
-          value={apelido}
-          onChange={(e) => setApelido(e.target.value)}
-          className="aluno-apelido-input"
-          onKeyPress={handleKeyPress}
-          disabled={loading}
-        />
-        <input
-          type="text"
-          placeholder="Código da sala (opcional)..."
-          value={codigoSala}
-          onChange={(e) => setCodigoSala(e.target.value)}
-          className="aluno-turma-input"
-          onKeyPress={handleKeyPress}
-          disabled={loading}
-        />
+        <div className="aluno-input-group">
+          <label className="aluno-input-label">NOME</label>
+          <input
+            type="text"
+            placeholder="Digite seu nome..."
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            className="aluno-nome-input"
+            onKeyPress={handleKeyPress}
+            disabled={loading}
+          />
+        </div>
+        
+        <div className="aluno-input-group">
+          <label className="aluno-input-label">NOME DA TURMA</label>
+          <input
+            type="text"
+            placeholder="Digite o nome da turma..."
+            value={nomeTurma}
+            onChange={(e) => setNomeTurma(e.target.value)}
+            className="aluno-turma-input"
+            onKeyPress={handleKeyPress}
+            disabled={loading}
+          />
+        </div>
+        
         <button 
           className="aluno-btn-comecar" 
           onClick={handleComecar}
           disabled={loading}
         >
-          {loading ? 'Carregando...' : 'Começar'}
+          {loading ? 'Carregando...' : 'COMEÇAR'}
         </button>
       </div>
     </div>
