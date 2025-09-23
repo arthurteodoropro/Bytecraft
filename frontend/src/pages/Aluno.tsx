@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAluno } from "../api/api"; // loginAluno agora recebe apelido + sala
 import type { Aluno as AlunoType } from "../types";
 import "./styles/Aluno.css";
+
+const API_BASE_URL = "http://localhost:8080/api";
 
 interface AlunoProps {
   setAluno: (aluno: AlunoType) => void;
@@ -22,12 +23,24 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
 
     try {
       setLoading(true);
-      const alunoData = await loginAluno(nome.trim(), nomeTurma.trim());
+      const response = await fetch(`${API_BASE_URL}/alunos/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apelido: nome.trim(), codigoSala: nomeTurma.trim() })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const msg = data?.erro || JSON.stringify(data) || `Erro no login: ${response.status}`;
+        throw new Error(msg);
+      }
 
       setAluno({
-        apelido: alunoData.apelido,
-        nivel: alunoData.nivel,
-        turma: nomeTurma.trim(),
+        apelido: data.apelido,
+        nivel: data.nivel || "INDEFINIDO",
+        turma: data.sala?.nomeTurma || nomeTurma.trim(),
+        codigoSala: data.sala?.codigo || 0 // <-- adiciona aqui
       });
 
       navigate("/niveis");
