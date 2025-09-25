@@ -14,9 +14,12 @@ public class Professor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    
     @Column(name = "nome_de_usuario", nullable = false)
     private String nomeDeUsuario;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @Column(name = "senha", nullable = false)
     private String senha;
 

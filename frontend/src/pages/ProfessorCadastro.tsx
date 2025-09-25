@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { api, ApiProfessor, ApiSala } from '../api/api';
+import { api, ApiProfessor } from '../api/api';
 import { useNavigate } from "react-router-dom";
 import "./styles/ProfessorCadastro.css";
 
@@ -19,24 +19,25 @@ const ProfessorCadastro: React.FC = () => {
     try {
       setLoading(true);
 
-      // 1️⃣ Cria a sala
-      const sala: ApiSala = await api.cadastrarSala(nomeTurma);
-
-      // 2️⃣ Cadastra o professor usando o id da sala
+      // Cadastro do professor (a sala será criada automaticamente no backend)
       const professor: ApiProfessor = await api.cadastrarProfessor(
         nome,
         senha,
-        sala.id
+        nomeTurma
       );
+
+      const sala = professor.sala;
 
       alert(
-        `Cadastro realizado!\nProfessor: ${professor.nomeDeUsuario}\nTurma: ${sala.nomeTurma}\nCódigo: ${sala.codigo}`
+        `Cadastro realizado!\nProfessor: ${professor.nomeDeUsuario}\n` +
+        `Turma: ${sala?.nomeTurma}\nCódigo: ${sala?.codigo}`
       );
 
+      // Limpa campos
       setNome('');
       setSenha('');
       setNomeTurma('');
-      
+
       // Redireciona para a página de login após cadastro bem-sucedido
       navigate("/professor");
     } catch (error: any) {
@@ -49,10 +50,6 @@ const ProfessorCadastro: React.FC = () => {
   const handleVoltar = () => {
     navigate("/professor");
   };
-
-  <button className="professor-cadastro-btn-voltar" onClick={handleVoltar}>
-    <img src="src/assets/bottons/botao_voltar.png" alt="Voltar" />
-  </button>
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !loading) {

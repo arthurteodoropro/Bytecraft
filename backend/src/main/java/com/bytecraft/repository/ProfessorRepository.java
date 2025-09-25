@@ -1,15 +1,37 @@
 package com.bytecraft.repository;
 
 import com.bytecraft.model.Professor;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
-public interface ProfessorRepository extends JpaRepository<Professor, Long> {
+@Repository
+public class ProfessorRepository {
 
-    Optional<Professor> findByNomeDeUsuario(String nomeDeUsuario);
+    @PersistenceContext
+    private EntityManager em;
 
-    List<Professor> findBySala_Id(Long salaId);
+    @Transactional
+    public int salvaProfessor(Professor professor) {
+        try {
+            em.persist(professor);
+            return 1; // sucesso
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0; // falha
+        }
+    }
 
+    public Professor buscarPorNome(String nomeDeUsuario) {
+        try {
+            return em.createQuery(
+                            "SELECT p FROM Professor p WHERE p.nomeDeUsuario = :nome", Professor.class)
+                    .setParameter("nome", nomeDeUsuario)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null; // caso não encontre
+        }
+    }
 }

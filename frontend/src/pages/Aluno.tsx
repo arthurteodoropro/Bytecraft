@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAluno, vincularAlunoASala } from "../api/api";
 import type { Aluno as AlunoType } from "../types";
 import "./styles/Aluno.css";
+
+const API_BASE_URL = "http://localhost:8080/api";
 
 interface AlunoProps {
   setAluno: (aluno: AlunoType) => void;
@@ -14,29 +15,34 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
   const [nomeTurma, setNomeTurma] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleVoltar = () => {
-    navigate("/");
-  };
+  const handleVoltar = () => navigate("/");
 
   const handleComecar = async () => {
+    if (!nome.trim()) return alert("Apelido é obrigatório");
+    if (!nomeTurma.trim()) return alert("Código da sala é obrigatório");
+
     try {
       setLoading(true);
-      const nomeParaEnviar = nome.trim() || "Anônimo";
-      
-      // Faz login ou criação do aluno
-      const alunoData = await loginAluno(nomeParaEnviar);
-      
-      // Se nome da turma informado, vincula aluno à turma
-      if (nomeTurma.trim()) {
-        await vincularAlunoASala(nomeParaEnviar, nomeTurma.trim());
+      const response = await fetch(`${API_BASE_URL}/alunos/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apelido: nome.trim(), codigoSala: nomeTurma.trim() })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const msg = data?.erro || JSON.stringify(data) || `Erro no login: ${response.status}`;
+        throw new Error(msg);
       }
 
       setAluno({
-        apelido: alunoData.apelido,
-        nivel: alunoData.nivel,
-        turma: nomeTurma.trim() || undefined,
+        apelido: data.apelido,
+        nivel: data.nivel || "INDEFINIDO",
+        turma: data.sala?.nomeTurma || nomeTurma.trim(),
+        codigoSala: data.sala?.codigo || 0 // <-- adiciona aqui
       });
-      
+
       navigate("/niveis");
     } catch (err) {
       alert("Erro no login ou vinculação: " + (err as Error).message);
@@ -46,9 +52,7 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !loading) {
-      handleComecar();
-    }
+    if (e.key === "Enter" && !loading) handleComecar();
   };
 
   return (
@@ -56,6 +60,7 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
       <button className="aluno-btn-voltar" onClick={handleVoltar}>
         <img src="src/assets/bottons/botao_voltar.png" alt="Voltar" />
       </button>
+
       <div className="aluno-content">
         <div className="aluno-input-group">
           <label className="aluno-input-label">NOME</label>
@@ -69,7 +74,7 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
             disabled={loading}
           />
         </div>
-        
+
         <div className="aluno-input-group">
           <label className="aluno-input-label">NOME DA TURMA</label>
           <input
@@ -82,13 +87,13 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
             disabled={loading}
           />
         </div>
-        
-        <button 
-          className="aluno-btn-comecar" 
+
+        <button
+          className="aluno-btn-comecar"
           onClick={handleComecar}
           disabled={loading}
         >
-          {loading ? 'Carregando...' : 'COMEÇAR'}
+          {loading ? "Carregando..." : "COMEÇAR"}
         </button>
       </div>
     </div>
