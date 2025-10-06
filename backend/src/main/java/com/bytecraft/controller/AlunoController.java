@@ -80,14 +80,17 @@ public class AlunoController {
                 return ResponseEntity.badRequest().body(Map.of("erro", "Nível é obrigatório"));
 
             Byte codigoSala = Byte.parseByte(codigoSalaStr);
+            NivelDificuldadeEnum nivel = NivelDificuldadeEnum.valueOf(nivelStr.toUpperCase());
+
+            // Atualiza nível pelo service
+            boolean atualizado = alunoService.registraNivel(nivel, apelido, codigoSala);
+            if (!atualizado)
+                return ResponseEntity.badRequest().body(Map.of("erro", "Aluno não encontrado"));
+
+            // Busca o aluno atualizado para retornar DTO
             Aluno aluno = alunoService.findAluno(apelido, codigoSala);
+            AlunoDTO alunoDTO = AlunoDTO.fromEntity(aluno);
 
-            // Atualiza nível
-            aluno.setNivel(NivelDificuldadeEnum.valueOf(nivelStr.toUpperCase()));
-            alunoService.registraNivel(aluno);
-
-            // Retorna DTO
-            AlunoDTO alunoDTO = alunoService.toDTO(aluno);
             return ResponseEntity.ok(alunoDTO);
 
         } catch (Exception e) {

@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonManagedReference; // em Sala
 
-
+//Classe do Pablo
 @Entity
 @Table(name = "salas")
 @Data

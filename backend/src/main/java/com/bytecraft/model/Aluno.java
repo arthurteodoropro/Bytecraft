@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;    // em Aluno
 
-
+//Classe do Pablo
 @Entity
 @Table(
     name = "alunos",

@@ -1,7 +1,6 @@
 package com.bytecraft.service;
 
-import com.bytecraft.DTO.AlunoDTO;
-import com.bytecraft.DTO.SalaDTO;
+import com.bytecraft.enums.NivelDificuldadeEnum;
 import com.bytecraft.model.Aluno;
 import com.bytecraft.model.Sala;
 import com.bytecraft.repository.AlunoRepository;
@@ -22,10 +21,10 @@ public class AlunoService {
 
     // Vincula aluno à sala
     public Aluno vincularAlunoASala(String apelido, Byte codigoSala) {
-        Sala sala = salaRepository.findByCodigoUnico(codigoSala)
+        Sala sala = salaRepository.buscarPorCodigo(codigoSala)
                 .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 
-        Optional<Aluno> existente = alunoRepository.findByApelidoAndSala(apelido, sala);
+        Optional<Aluno> existente = alunoRepository.buscarPorApelidoESala(apelido, sala);
         if (existente.isPresent()) return existente.get();
 
         Aluno novo = new Aluno();
@@ -34,24 +33,29 @@ public class AlunoService {
         return alunoRepository.save(novo);
     }
 
-    // Atualiza nível do aluno
     @Transactional
-    public void registraNivel(Aluno aluno) {
-        alunoRepository.atualizaNivel(aluno.getNivel(), aluno.getApelido(), aluno.getSala());
+    public boolean registraNivel(NivelDificuldadeEnum nivel, String apelido, Byte codigoSala) {
+        // Primeiro busca a sala
+        Sala sala = salaRepository.buscarPorCodigo(codigoSala)
+                .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
+
+        // Busca o aluno pelo apelido e sala
+        return alunoRepository.buscarPorApelidoESala(apelido, sala)
+                .map(aluno -> {
+                    aluno.setNivel(nivel);
+                    alunoRepository.save(aluno); // persiste a alteração
+                    return true; // sucesso
+                })
+                .orElse(false); // aluno não encontrado
     }
 
     // Busca aluno em uma sala
     public Aluno findAluno(String apelido, Byte codigoSala) {
-        Sala sala = salaRepository.findByCodigoUnico(codigoSala)
+        Sala sala = salaRepository.buscarPorCodigo(codigoSala)
                 .orElseThrow(() -> new RuntimeException("Sala não encontrada"));
 
-        return alunoRepository.findByApelidoAndSala(apelido, sala)
+        return alunoRepository.buscarPorApelidoESala(apelido, sala)
                 .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
     }
 
-    public AlunoDTO toDTO(Aluno aluno) {
-        Sala sala = aluno.getSala();
-        SalaDTO salaDTO = new SalaDTO(sala.getId(), sala.getNomeTurma(), sala.getCodigoUnico());
-        return new AlunoDTO(aluno.getApelido(), aluno.getNivel().name(), salaDTO);
-    }
 }
