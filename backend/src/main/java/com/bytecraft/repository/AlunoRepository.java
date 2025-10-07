@@ -29,10 +29,12 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
     // Buscar aluno só por apelido
     @Query("SELECT a FROM Aluno a WHERE a.apelido = :apelido")
     Optional<Aluno> buscarPorApelido(String apelido);
-        
-    //Atualiza pontuação do aluno
-   /*  @Query("")
-    int atualizaPontuacao(String apelido, int pontuacao);*/
+    
+    // Atualizar pontuação considerando id do aluno
+    @Modifying
+    @Transactional
+    @Query("UPDATE Aluno a SET a.pontuacao = :pontuacao WHERE a.id = :id")
+    int atualizaPontuacao(@Param("id") Long id, @Param("pontuacao") int pontuacao);
 
     // Buscar alunos por sala
     @Query("SELECT a FROM Aluno a WHERE a.sala.id = :id")

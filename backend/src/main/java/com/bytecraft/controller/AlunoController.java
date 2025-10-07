@@ -111,4 +111,40 @@ public class AlunoController {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
+
+    @PostMapping("/setPontuacao")
+    public ResponseEntity<?> salvaPontuacao(@RequestBody Map<String, String> payload) {
+        try {
+            String apelido = payload.get("apelido");
+            String codigoSalaStr = payload.get("codigoSala");
+            String pontosStr = payload.get("pontos");
+            String segundosStr = payload.get("segundos");
+
+            if (apelido != null) apelido = apelido.trim().replaceAll("\\s+", " ");
+            if (codigoSalaStr != null) codigoSalaStr = codigoSalaStr.trim();
+            if (pontosStr != null) pontosStr = pontosStr.trim();
+            if (segundosStr != null) segundosStr = segundosStr.trim();
+
+            if (apelido == null || apelido.isEmpty())
+                return ResponseEntity.badRequest().body(Map.of("erro", "Apelido é obrigatório"));
+            if (codigoSalaStr == null || codigoSalaStr.isEmpty())
+                return ResponseEntity.badRequest().body(Map.of("erro", "Código da sala é obrigatório"));
+            if (pontosStr == null || pontosStr.isEmpty())
+                return ResponseEntity.badRequest().body(Map.of("erro", "Pontos são obrigatórios"));
+            if (segundosStr == null || segundosStr.isEmpty())
+                return ResponseEntity.badRequest().body(Map.of("erro", "Tempo (segundos) é obrigatório"));
+
+            Byte codigoSala = Byte.parseByte(codigoSalaStr);
+            int pontos = Integer.parseInt(pontosStr);
+            int segundos = Integer.parseInt(segundosStr);
+
+            boolean atualizado = alunoService.registraPontuacao(apelido, segundos, pontos, codigoSala);
+
+            return ResponseEntity.ok(Map.of("atualizado", atualizado));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("erro", "Erro ao registrar pontuação: " + e.getMessage()));
+        }
+    }
+
+
 }
