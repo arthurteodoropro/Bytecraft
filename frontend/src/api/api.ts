@@ -4,6 +4,7 @@ export interface ApiAluno {
   apelido: string;
   nivel?: string;
   turma?: string;
+  pontuacao?: number;
 }
 
 export interface ApiSala {
@@ -85,6 +86,12 @@ export const listarSalas = async (): Promise<ApiSala[]> => {
   return await response.json();
 };
 
+export const getRankingTurma = async (codigoUnico: number): Promise<ApiAluno[]> => {
+  const res = await fetch(`${API_BASE_URL}/salas/getRanking/${codigoUnico}`);
+  if (!res.ok) throw new Error(await res.text() || `Erro ao buscar ranking: ${res.status}`);
+  return res.json();
+};
+
 // ===== PROFESSOR =====
 export const cadastrarProfessor = async (
   nomeDeUsuario: string,
@@ -117,6 +124,7 @@ export const api = {
   loginAluno,
   getNiveis,
   registrarNivel,
+  getRankingTurma,
 
   // Salas
   listarSalas,

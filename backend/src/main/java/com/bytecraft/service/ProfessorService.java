@@ -17,38 +17,33 @@ public class ProfessorService {
     private final SalaService salaService;
     private final PasswordEncoder passwordEncoder;
 
-    // 🔹 Método utilitário para normalizar texto (trim + remover espaços extras internos)
-    private String normalizar(String texto) {
-        return texto == null ? null : texto.trim().replaceAll("\\s+", " ");
-    }
-
     // Cadastra professor e cria sala se não existir
     public ProfessorDTO cadastrarProfessor(String nome, String senha, String nomeTurma) {
         // Normaliza entradas
-        nome = normalizar(nome);
-        senha = normalizar(senha); // opcional, mas evita espaços no início/fim
-        nomeTurma = normalizar(nomeTurma);
+        String nomeTrim = nome != null ? nome.trim() : null;
+        String senhaTrim = senha != null ? senha.trim() : null; // opcional, mas evita espaços no início/fim
+        String nomeTurmaTrim = nomeTurma != null ? nomeTurma.trim() : null;
 
         // Validações básicas
-        if (nome == null || nome.isEmpty() || senha == null || senha.isEmpty() || nomeTurma == null || nomeTurma.isEmpty()) {
+        if (nomeTrim == null || nomeTrim.isEmpty() || senhaTrim == null || senhaTrim.isEmpty() || nomeTurmaTrim == null || nomeTurmaTrim.isEmpty()) {
             throw new IllegalArgumentException("Nome, senha e nome da turma são obrigatórios");
         }
-        if (senha.length() < 6) {
+        if (senhaTrim.length() < 6) {
             throw new IllegalArgumentException("Senha deve ter no mínimo 6 caracteres");
         }
 
         // Verifica duplicidade
-        if (professorRepository.buscarPorNome(nome) != null) {
+        if (professorRepository.buscarPorNome(nomeTrim) != null) {
             throw new IllegalStateException("Nome de usuário já existe");
         }
 
         // Cria sala associada
-        Sala sala = salaService.criaSala(nomeTurma);
+        Sala sala = salaService.criaSala(nomeTurmaTrim);
 
         // Cria e persiste professor
         Professor professor = new Professor();
-        professor.setNomeDeUsuario(nome);
-        professor.setSenha(passwordEncoder.encode(senha));
+        professor.setNomeDeUsuario(nomeTrim);
+        professor.setSenha(passwordEncoder.encode(senhaTrim));
         professor.setSala(sala);
 
         professorRepository.salvaProfessor(professor);
@@ -58,15 +53,15 @@ public class ProfessorService {
     }
 
     public Professor autenticarProfessor(String nome, String senha) {
-        nome = normalizar(nome);
-        senha = normalizar(senha);
+        String nomeTrim = nome != null ? nome.trim() : null;
+        String senhaTrim = senha != null ? senha.trim() : null;
 
-        if (nome == null || nome.isEmpty() || senha == null || senha.isEmpty()) {
+        if (nomeTrim == null || nomeTrim.isEmpty() || senhaTrim == null || senhaTrim.isEmpty()) {
             throw new IllegalArgumentException("Nome e senha são obrigatórios");
         }
 
-        Professor professor = professorRepository.buscarPorNome(nome);
-        if (professor != null && passwordEncoder.matches(senha, professor.getSenha())) {
+        Professor professor = professorRepository.buscarPorNome(nomeTrim);
+        if (professor != null && passwordEncoder.matches(senhaTrim, professor.getSenha())) {
             return professor;
         }
         return null;
