@@ -57,7 +57,7 @@
   line-height: 1.7;
   color: #333;
   margin: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive;
   padding-top: 1rem;
 }
 
@@ -77,20 +77,25 @@
   font-size: 1.5rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 0 #14532d;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 5px 0 #14532d;
   letter-spacing: 0.8px;
+  font-family: "Impact", "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive;
+  position: relative;
+  margin-bottom: 0.5rem;
 }
 
 .boas-vindas-btn:hover {
   background-color: #16a34a;
-  transform: translateY(3px);
+  transform: translateY(2px);
   box-shadow: 0 3px 0 #14532d;
+  margin-bottom: 0.25rem;
 }
 
 .boas-vindas-btn:active {
-  transform: translateY(6px);
+  transform: translateY(4px);
   box-shadow: 0 0 0 #14532d;
+  margin-bottom: 0.75rem;
 }
 
 @keyframes fadeIn {
@@ -113,44 +118,220 @@
   }
 }
 
-@media (max-width: 600px) {
+/* Mobile - Responsividade Proporcional */
+@media (max-width: 768px) {
   .boas-vindas-content {
-    padding: 3.5rem 2.5rem 2.8rem;
-    width: 85%;
-    margin-top: 120px;
+    padding: 3rem 2rem 2.5rem;
+    max-width: 85%;
+    margin-top: 100px;
     border-radius: 20px;
   }
 
   .ramon-container {
-    top: -100px;
-    left: -35px;
-    width: 240px;
-    height: 240px;
-  }
-
-  .ramon-saltando {
+    top: -90px;
+    left: -30px;
     width: 220px;
     height: 220px;
   }
 
+  .ramon-saltando {
+    width: 200px;
+    height: 200px;
+  }
+
   .boas-vindas-texto {
-    margin: 2rem 0 2.5rem;
+    margin: 1.5rem 0 2rem;
     padding: 0 1rem;
   }
 
   .boas-vindas-texto p {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    padding-top: 0.8rem;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    padding-top: 0.5rem;
   }
 
   .boas-vindas-texto strong {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
   }
 
   .boas-vindas-btn {
-    padding: 1.1rem 3.5rem;
-    font-size: 1.3rem;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
     border-radius: 12px;
+    border-width: 2px;
+  }
+}
+
+/* Mobile Pequeno */
+@media (max-width: 480px) {
+  .boas-vindas-content {
+    padding: 2.5rem 1.5rem 2rem;
+    max-width: 90%;
+    margin-top: 80px;
+    border-radius: 18px;
+  }
+
+  .ramon-container {
+    top: -70px;
+    left: -20px;
+    width: 180px;
+    height: 180px;
+  }
+
+  .ramon-saltando {
+    width: 160px;
+    height: 160px;
+  }
+
+  .boas-vindas-texto {
+    margin: 1rem 0 1.5rem;
+    padding: 0 0.5rem;
+  }
+
+  .boas-vindas-texto p {
+    font-size: 1rem;
+    line-height: 1.4;
+    padding-top: 0.3rem;
+  }
+
+  .boas-vindas-texto strong {
+    font-size: 1.05rem;
+  }
+
+  .boas-vindas-btn {
+    padding: 0.8rem 2.5rem;
+    font-size: 1.1rem;
+    border-radius: 10px;
+  }
+}
+
+/* Mobile Muito Pequeno */
+@media (max-width: 360px) {
+  .boas-vindas-content {
+    padding: 2rem 1rem 1.5rem;
+    margin-top: 60px;
+    border-radius: 15px;
+  }
+
+  .ramon-container {
+    top: -50px;
+    left: -15px;
+    width: 140px;
+    height: 140px;
+  }
+
+  .ramon-saltando {
+    width: 120px;
+    height: 120px;
+  }
+
+  .boas-vindas-texto {
+    margin: 0.8rem 0 1.2rem;
+  }
+
+  .boas-vindas-texto p {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .boas-vindas-btn {
+    padding: 0.7rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* Portrait (Em Pé) - Aviso de Rotação */
+@media (max-width: 768px) and (orientation: portrait) {
+  .boas-vindas-overlay {
+    background-image: url('../assets/graphics/aviso_rotate.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .boas-vindas-content {
+    filter: blur(3px);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* Aviso de rotação customizado */
+  .boas-vindas-overlay::before {
+    content: '📱 Para melhor experiência, vire o telefone para a posição deitada! 🔄';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.5);
+    border: 0.2rem solid white;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    z-index: 2001;
+    max-width: 80%;
+    font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive;
+    text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Landscape (Deitado) - Ajustes para melhor visualização */
+@media (max-width: 768px) and (orientation: landscape) {
+  .boas-vindas-content {
+    margin-top: 80px;
+    max-width: 75%;
+  }
+
+  .ramon-container {
+    top: -80px;
+    left: -25px;
+    width: 200px;
+    height: 200px;
+  }
+
+  .ramon-saltando {
+    width: 180px;
+    height: 180px;
+  }
+
+  .boas-vindas-texto {
+    margin: 1.2rem 0 1.8rem;
+  }
+
+  .boas-vindas-texto p {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+}
+
+/* Landscape com pouca altura */
+@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
+  .boas-vindas-content {
+    margin-top: 60px;
+    padding: 2rem 1.5rem 1.5rem;
+  }
+
+  .ramon-container {
+    top: -60px;
+    left: -20px;
+    width: 160px;
+    height: 160px;
+  }
+
+  .ramon-saltando {
+    width: 140px;
+    height: 140px;
+  }
+
+  .boas-vindas-texto {
+    margin: 0.8rem 0 1.2rem;
+  }
+
+  .boas-vindas-btn {
+    padding: 0.7rem 2rem;
+    font-size: 1rem;
   }
 }
