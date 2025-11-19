@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, ApiProfessor } from "../api/api";
+import {useSound} from "../hooks/useSounds";
 import "./styles/Professor.css";
 
-const safeUrl = (relPath: string) => {
-  try {
-    return new URL(relPath, import.meta.url).href;
-  } catch (err) {
-    console.error("Erro ao resolver asset:", relPath, err);
-    return "";
-  }
-};
-
-const backgroundProfessor = safeUrl("../assets/backgrounds/background_professor.png");
-const voltarIcon = safeUrl("../assets/bottons/botao_voltar.png");
+import backgroundProfessor from "../assets/backgrounds/background_professor.png";
+import voltarIcon from "../assets/bottons/botao_voltar.png";
 
 const Professor: React.FC = () => {
   const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [senha, setSenha] = useState("");
   const [isPortrait, setIsPortrait] = useState(false);
+  const { playClick } = useSound();
 
-  // Detecta orientação da tela
   useEffect(() => {
     const checkOrientation = () => {
       const isMobile = window.innerWidth <= 768;
@@ -41,29 +33,34 @@ const Professor: React.FC = () => {
   }, []);
 
   const handleLogin = async () => {
+    playClick();
     if (!nome || !senha) {
       alert("Preencha todos os campos!");
       return;
     }
 
     try {
-      // Faz o login e obtém os dados do professor
       const professorLogado: ApiProfessor = await api.loginProfessor(nome, senha);
 
-      // Armazena no localStorage (para persistência após refresh)
       localStorage.setItem("professor", JSON.stringify(professorLogado));
 
       alert("Login bem-sucedido!");
 
-      // Redireciona para a página da sala, enviando o professor logado
       navigate("/sala", { state: { professor: professorLogado } });
     } catch (error: any) {
       alert("Erro no login: " + (error.response?.data || error.message));
     }
   };
 
-  const handleVoltar = () => navigate("/");
-  const irParaCadastro = () => navigate("/professor/cadastro");
+  const handleVoltar = () => {
+    playClick();
+    navigate("/");
+  }
+
+  const irParaCadastro = () =>{ 
+    playClick();
+    navigate("/professor/cadastro");
+  }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleLogin();
@@ -81,7 +78,6 @@ const Professor: React.FC = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Mensagem para modo retrato */}
       {isPortrait && (
         <div className="professor-portrait-warning">
           <div className="professor-portrait-message">

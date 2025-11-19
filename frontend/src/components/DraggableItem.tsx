@@ -75,7 +75,13 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
     monitor: ["cinza", "azul", "rosa"],
     mouse: ["cinza", "azul", "rosa"],
     teclado: ["cinza", "azul", "rosa"],
-    caixa_som: []
+    caixa_som: [],
+    placa_mae: [],
+    processador: [],
+    ram: [],
+    ssd: [],
+    placa_video: [],
+    fan: []
   };
 
   const pecaId = item.id.split("_")[0];
@@ -100,10 +106,12 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
   };
 
   return (
-    <div className={`draggable-item-wrapper ${isSelected ? "draggable-item-wrapper-selected" : ""} ${disabled ? "draggable-item-disabled" : ""}`}>
+    <div 
+      onClick={handleItemClick} 
+      className={`draggable-item-wrapper ${isSelected ? "draggable-item-wrapper-selected" : ""} ${disabled ? "draggable-item-disabled" : ""}`}
+    >
       <div
-        ref={ref}
-        onClick={handleItemClick}
+        ref={ref} 
         className={`draggable-item ${
           placed ? "draggable-item-placed" : ""
         } ${isDragging ? "draggable-item-dragging" : ""} ${

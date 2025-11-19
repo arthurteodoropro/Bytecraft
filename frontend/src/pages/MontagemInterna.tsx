@@ -10,6 +10,7 @@ import PainelPontuacao from "../components/PainelPontuacao";
 import Cronometro from "../components/Cronometro";
 import { useCronometro } from "../hooks/useCronometro";
 import { usePontuacao } from "../hooks/usePontuacao";
+import { useSound } from "../hooks/useSounds";
 import api from "../api/api";
 import type { 
   PecaItem, 
@@ -19,7 +20,6 @@ import type {
 } from "../types";
 import "./styles/MontagemInterna.css";
 
-// Importar peças internas
 import processador from "../assets/peças/processador (1).png";
 import ram from "../assets/peças/ram (1).png";
 import ssd from "../assets/peças/ssd (1).png";
@@ -27,10 +27,17 @@ import placaVideo from "../assets/peças/placa_video (1).png";
 import fan from "../assets/peças/fan.png";
 import fanAzul from "../assets/peças/fan_azul.png";
 import gabinete from "../assets/peças/gabinete.png";
+import placaMae from "../assets/peças/placa_mae.png";
 
-const SEQUENCIA_PECAS = ["processador_1", "ram_1", "ssd_1", "placa_video_1", "fan_1"];
+const SEQUENCIA_PECAS = ["placa_mae_1", "processador_1", "ram_1", "ssd_1", "placa_video_1", "fan_1"];
 
 const HISTORIAS_FIXAS: DialogoHistoria[] = [
+  {
+    id: "0",
+    titulo: "A Placa-Mãe",
+    texto: "A placa-mãe é a base do computador. Todos os outros componentes se conectam a ela. Vamos começar posicionando-a no gabinete!",
+    pecaId: "placa_mae_1"
+  },
   {
     id: "1",
     titulo: "O Processador",
@@ -133,6 +140,7 @@ const obterMensagemAleatoria = (nivel: NivelDificuldade, tipo: 'sucesso' | 'erro
 };
 
 const MAPEAMENTO_CORRETO: Record<string, string> = {
+  "placa_mae_1": "dropzone_placa_mae",
   "processador_1": "dropzone_processador",
   "ram_1": "dropzone_ram",
   "ssd_1": "dropzone_ssd",
@@ -144,7 +152,6 @@ const MontagemInterna: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Recuperar dados do aluno do state ou localStorage
   const alunoState = location.state?.aluno as AlunoType | undefined;
   const alunoLocalStorage = localStorage.getItem("aluno") 
     ? JSON.parse(localStorage.getItem("aluno")!) as AlunoType 
@@ -157,16 +164,23 @@ const MontagemInterna: React.FC = () => {
   const codigoSala = aluno?.codigoSala || Number(localStorage.getItem("codigoSala")) || 999;
   const nivel = nivelDificuldade;
 
-  const [historiaAtual, setHistoriaAtual] = useState<DialogoHistoria | null>(null);
-  const [mostrarHistoria, setMostrarHistoria] = useState(false);
+  const pontuacaoExterna = Number(localStorage.getItem("pontuacaoMontagem")) || 0;
+  const tempoExterna = Number(localStorage.getItem("tempoMontagem")) || 0;
+
+  const { playClick } = useSound();
+  const { playSuccess } = useSound();
+  const { playError } = useSound();
+  const {playWinner} = useSound();
+
   const [mensagemSucesso, setMensagemSucesso] = useState("");
 
   const {
     pontuacaoTotal,
     registrarTentativa,
     calcularPontuacaoFinalComBonus,
-    resetar: resetarPontuacao
-  } = usePontuacao();
+    resetar: resetarPontuacao,
+    obterResumo
+  } = usePontuacao(pontuacaoExterna);
 
   const {
     tempo,
@@ -175,12 +189,11 @@ const MontagemInterna: React.FC = () => {
     resetar: resetarCronometro
   } = useCronometro();
 
-  // Handler para o botão voltar do navegador
   useEffect(() => {
     const handlePopState = (e: PopStateEvent) => {
       e.preventDefault();
       navigate('/fases', { 
-        state: { aluno },
+        state: { aluno, nivel: nivelDificuldade },
         replace: true 
       });
     };
@@ -190,7 +203,7 @@ const MontagemInterna: React.FC = () => {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [navigate, aluno]);
+  }, [navigate, aluno, nivelDificuldade]);
 
   useEffect(() => {
     iniciarCronometro();
@@ -198,6 +211,13 @@ const MontagemInterna: React.FC = () => {
   }, []);
 
   const [pecas, setPecas] = useState<PecaItem[]>([
+    { 
+      id: "placa_mae_1", 
+      label: "Placa-Mãe", 
+      imagem: placaMae, 
+      color: "padrao",
+      descricao: "Base do computador"
+    },
     { 
       id: "processador_1", 
       label: "Processador", 
@@ -247,47 +267,25 @@ const MontagemInterna: React.FC = () => {
   const [showErro, setShowErro] = useState(false);
   const [mensagemErro, setMensagemErro] = useState("");
   
-  const [historiaIndex, setHistoriaIndex] = useState(0);
-  const [historiaAtualFluxo, setHistoriaAtualFluxo] = useState<DialogoHistoria | null>(HISTORIAS_FIXAS[0]);
-  const [showHistoria, setShowHistoria] = useState(true);
-  
   const [indicePecaAtual, setIndicePecaAtual] = useState(0);
   const [tentativasPeca, setTentativasPeca] = useState(0);
+  const [historiaAtual, setHistoriaAtual] = useState<DialogoHistoria | null>(HISTORIAS_FIXAS[0]);
 
   const [showConclusao, setShowConclusao] = useState(false);
   const [pontuacaoFinal, setPontuacaoFinal] = useState(0);
+  const [tempoFinalTotal, setTempoFinalTotal] = useState(0);
+  
+  const [placaMaeMontada, setPlacaMaeMontada] = useState(false);
 
   const pecaAtivaId = SEQUENCIA_PECAS[indicePecaAtual];
 
-  useEffect(() => {
-    console.log("Inicializando montagem interna...");
-    console.log("Peça ativa inicial:", pecaAtivaId);
-  }, []);
+  const avancarParaProximaPeca = () => {
+    const proximoIndex = indicePecaAtual + 1;
 
-  useEffect(() => {
-    if (!showHistoria && historiaAtualFluxo) {
-      setTentativasPeca(0);
-      const novoIndice = HISTORIAS_FIXAS.findIndex(h => h.pecaId === historiaAtualFluxo.pecaId);
-      if (novoIndice !== -1) {
-        setIndicePecaAtual(novoIndice);
-        console.log("Índice atualizado para:", novoIndice, "Peça:", historiaAtualFluxo.pecaId);
-      }
-    }
-  }, [showHistoria, historiaAtualFluxo]);
-
-  const handleContinuarHistoria = () => {
-    setShowHistoria(false);
-  };
-
-  const avancarHistoria = () => {
-    const proximoIndex = historiaIndex + 1;
-
-    if (proximoIndex < HISTORIAS_FIXAS.length) {
-      const proximaHistoria = HISTORIAS_FIXAS[proximoIndex];
-      setHistoriaIndex(proximoIndex);
-      setHistoriaAtualFluxo(proximaHistoria);
-      setShowHistoria(true);
+    if (proximoIndex < SEQUENCIA_PECAS.length) {
       setIndicePecaAtual(proximoIndex);
+      setHistoriaAtual(HISTORIAS_FIXAS[proximoIndex]);
+      setTentativasPeca(0);
     } else {
       finalizarMontagem();
     }
@@ -345,11 +343,8 @@ const MontagemInterna: React.FC = () => {
   };
 
   const handleDrop = (itemId: string, targetId: string) => {
-    console.log("Tentativa de drop:", { itemId, pecaAtivaId, targetId, ehPecaAtiva: itemId === pecaAtivaId });
-
     const ehPecaAtiva = itemId === pecaAtivaId;
     if (!ehPecaAtiva) {
-      console.log(`Erro: Peça ${itemId} não está ativa. Ativa: ${pecaAtivaId}`);
       registrarTentativa(itemId, false, nivelDificuldade || "medio");
       setMensagemErro(obterMensagemAleatoria(nivel, 'erro'));
       setShowErro(true);
@@ -359,10 +354,8 @@ const MontagemInterna: React.FC = () => {
     const dropZoneCorreta = MAPEAMENTO_CORRETO[pecaAtivaId];
     const acertouLocal = targetId === dropZoneCorreta;
     
-    console.log(`Validação de posição: Esperado=${dropZoneCorreta}, Recebido=${targetId}, Acertou=${acertouLocal}`);
-    
     if (!acertouLocal) {
-      console.log(`Erro: Local incorreto para ${itemId}`);
+      playError();
       const novasTentativas = tentativasPeca + 1;
       setTentativasPeca(novasTentativas);
       registrarTentativa(itemId, false, nivelDificuldade || "medio");
@@ -372,11 +365,15 @@ const MontagemInterna: React.FC = () => {
       return;
     }
 
-    console.log(`Sucesso! ${itemId} encaixado em ${targetId}`);
+    playSuccess();
     const pontosObtidos = registrarTentativa(itemId, true, nivelDificuldade || "medio");
-    
+    const novaPontuacaoTotal = pontuacaoTotal + pontosObtidos;
     const novasPecasColocadas = new Set([...pecasColocadas, itemId]);
     setPecasColocadas(novasPecasColocadas);
+    
+    if (itemId === "placa_mae_1") {
+      setPlacaMaeMontada(true);
+    }
     
     setPontosGanhos(pontosObtidos);
     setPecaSelecionada(null);
@@ -384,51 +381,50 @@ const MontagemInterna: React.FC = () => {
     setMostrarDica(false);
     setMensagemSucesso(obterMensagemAleatoria(nivel, 'sucesso'));
     
-    setShowSucesso(true);
-    
     try {
       api.salvarProgresso(apelido, codigoSala, false);
-    } catch (err) {
-      console.warn("Falha ao salvar progresso:", err);
-    }
+    } catch (err) {}
 
-    if (novasPecasColocadas.size === pecas.length) {
+    const ehUltimaPeca = novasPecasColocadas.size === pecas.length;
+    
+    if (ehUltimaPeca) {
+      setShowSucesso(true);
       setTimeout(() => {
         setShowSucesso(false);
-        finalizarMontagem();
+        finalizarMontagem(novaPontuacaoTotal);
       }, 2000);
     } else {
+      setShowSucesso(true);
       setTimeout(() => {
         setShowSucesso(false);
-        avancarHistoria();
+        avancarParaProximaPeca();
       }, 2000);
     }
   };
 
-  async function finalizarMontagem() {
+  async function finalizarMontagem(pontuacaoTotalAtualizada?: number) {
     pausarCronometro();
+    playWinner();
     
-    // Recuperar pontuação da montagem externa
-    const pontuacaoExterna = Number(localStorage.getItem("pontuacaoMontagem")) || 0;
-    const tempoExterna = Number(localStorage.getItem("tempoMontagem")) || 0;
-    
-    // Calcular pontuação total (externa + interna)
-    const pontuacaoInterna = calcularPontuacaoFinalComBonus(tempo);
-    const pontuacaoFinalTotal = pontuacaoExterna + pontuacaoInterna;
+    const pontuacaoBaseParaCalculo = pontuacaoTotalAtualizada !== undefined 
+        ? pontuacaoTotalAtualizada 
+        : obterResumo().pontuacaoBase;
+
     const tempoTotal = tempoExterna + tempo;
     
-    setPontuacaoFinal(pontuacaoFinalTotal);
+    const pontuacaoFinalComBonus = calcularPontuacaoFinalComBonus(tempoTotal, pontuacaoBaseParaCalculo);
     
+    setPontuacaoFinal(pontuacaoFinalComBonus);
+    setTempoFinalTotal(tempoTotal);
+
     try {
-      await api.registraPontuacao(apelido, codigoSala, pontuacaoFinalTotal, tempoTotal);
-      console.log("Pontuação final salva!");
+      await api.registraPontuacao(apelido, codigoSala, pontuacaoBaseParaCalculo, tempoTotal);
       
-      // Limpar dados temporários
+      await api.salvarProgresso(apelido, codigoSala, true);
+      
       localStorage.removeItem("pontuacaoMontagem");
       localStorage.removeItem("tempoMontagem");
-    } catch (err) {
-      console.error("Erro ao salvar pontuação:", err);
-    }
+    } catch (err) {}
     
     setShowConclusao(true);
   }
@@ -440,8 +436,12 @@ const MontagemInterna: React.FC = () => {
   const handleVoltarFases = () => {
     resetarPontuacao();
     resetarCronometro();
+    
     navigate('/fases', { 
-      state: { aluno },
+      state: { 
+        aluno,
+        nivel: nivelDificuldade
+      },
       replace: true 
     });
   };
@@ -452,7 +452,7 @@ const MontagemInterna: React.FC = () => {
 
   const obterLabelPecaAtiva = (): string => {
     const peca = pecas.find(p => p.id === pecaAtivaId);
-    return peca?.label || "Processador";
+    return peca?.label || "Placa-Mãe";
   };
 
   if (!aluno?.apelido) {
@@ -482,27 +482,29 @@ const MontagemInterna: React.FC = () => {
         </div>
       )}
 
-      {!showHistoria && (
-        <div className="montagem-interna-alerta-selecao">
-          <span className="montagem-interna-alerta-icone">👆</span>
-          <span>Arraste a peça <strong>{obterLabelPecaAtiva()}</strong> para o local correto!</span>
-        </div>
-      )}
+      <div className="montagem-interna-alerta-selecao">
+        <span className="montagem-interna-alerta-icone">👆</span>
+        <span>Arraste a peça <strong>{obterLabelPecaAtiva()}</strong> para o local correto!</span>
+      </div>
 
       <div className="montagem-interna-content">
         <div className="montagem-interna-workspace">
           <div className="montagem-interna-central-wrapper">
-            {historiaAtualFluxo && showHistoria && (
-              <div className="montagem-interna-historia-balao">
-                <h3>{historiaAtualFluxo.titulo}</h3>
-                <p>{historiaAtualFluxo.texto}</p>
-              </div>
-            )}
-
             <div className="montagem-interna-gabinete-container">
-              <div className="montagem-interna-gabinete">
+              <div className={`montagem-interna-gabinete ${placaMaeMontada ? 'placa-mae-montada' : ''}`}>
                 <img src={gabinete} alt="Gabinete" className="montagem-interna-gabinete-img" />
                 
+                <div className="montagem-interna-dropzone-placa-mae">
+                  <DropZone
+                    id="dropzone_placa_mae"
+                    onDrop={handleDrop}
+                    placed={pecasColocadas.has("placa_mae_1")}
+                    image={obterImagemPeca("placa_mae_1")}
+                    destacar={dropZoneDestacada === "dropzone_placa_mae"}
+                    nivel={nivelDificuldade}
+                  />
+                </div>
+
                 <div className="montagem-interna-dropzone-processador">
                   <DropZone
                     id="dropzone_processador"
@@ -580,21 +582,9 @@ const MontagemInterna: React.FC = () => {
         </div>
       </div>
 
-      {historiaAtualFluxo && (
-        <HistoriaModal
-          isOpen={showHistoria}
-          historia={historiaAtualFluxo}
-          onContinuar={handleContinuarHistoria}
-        />
-      )}
-
       <HistoriaModal
-        isOpen={mostrarHistoria}
+        isOpen={historiaAtual !== null}
         historia={historiaAtual}
-        onContinuar={() => {
-          setMostrarHistoria(false);
-          setHistoriaAtual(null);
-        }}
       />
 
       <SucessoModal
@@ -613,9 +603,10 @@ const MontagemInterna: React.FC = () => {
       <ConclusaoModal
         isOpen={showConclusao}
         pontuacaoFinal={pontuacaoFinal}
-        tempo={tempo}
+        tempo={tempoFinalTotal}
         codigoSala={aluno?.codigoSala ?? codigoSala}
         alunoApelido={aluno?.apelido ?? apelido}
+        nivel={nivelDificuldade}
         onVoltarFases={handleVoltarFases}
       />
     </div>

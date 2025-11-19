@@ -1,20 +1,13 @@
+// Niveis.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getNiveis, registrarNivel } from "../api/api";
 import type { Aluno as AlunoType } from "../types";
+import {useSound} from "../hooks/useSounds";
 import "./styles/Niveis.css";
 
-const safeUrl = (relPath: string) => {
-  try {
-    return new URL(relPath, import.meta.url).href;
-  } catch (err) {
-    console.error("Erro ao resolver asset:", relPath, err);
-    return "";
-  }
-};
-
-const backgroundNiveis = safeUrl("../assets/backgrounds/background_niveis.png");
-const voltarIcon = safeUrl("../assets/bottons/botao_voltar.png");
+import backgroundNiveis from "../assets/backgrounds/background_niveis.png";
+import voltarIcon from "../assets/bottons/botao_voltar.png";
 
 interface NiveisProps {
   aluno: AlunoType | null;
@@ -26,8 +19,8 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPortrait, setIsPortrait] = useState(false);
+  const { playClick } = useSound();
 
-  // Detecta orientação da tela
   useEffect(() => {
     const checkOrientation = () => {
       const isMobile = window.innerWidth <= 768;
@@ -55,7 +48,6 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
         setError(null);
       } catch (err) {
         setError((err as Error).message);
-        console.error("Erro ao carregar níveis:", err);
       } finally {
         setLoading(false);
       }
@@ -65,10 +57,12 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
   }, []);
 
   const handleVoltar = () => {
+    playClick();
     navigate("/aluno");
   };
 
   const selecionarNivel = async (nivel: string) => {
+    playClick();
     try {
       if (!aluno?.apelido || !aluno?.codigoSala) {
         alert("Aluno ou código da sala não identificado. Faça login novamente.");
@@ -79,7 +73,6 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
       setLoading(true);
       const atualizado = await registrarNivel(aluno.apelido, nivel, aluno.codigoSala!);
 
-      // Salvar nível no localStorage
       localStorage.setItem("nivelSelecionado", nivel);
 
       const alunoAtualizado = { ...aluno, nivel: atualizado.nivel };
@@ -92,7 +85,6 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
       });
     } catch (err) {
       alert("Erro: " + (err as Error).message);
-      console.error("Erro ao atualizar nível:", err);
     } finally {
       setLoading(false);
     }
@@ -132,7 +124,6 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Mensagem para modo retrato */}
         {isPortrait && (
           <div className="niveis-portrait-warning">
             <div className="niveis-portrait-message">
@@ -162,7 +153,6 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Mensagem para modo retrato */}
         {isPortrait && (
           <div className="niveis-portrait-warning">
             <div className="niveis-portrait-message">
@@ -194,7 +184,6 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Mensagem para modo retrato */}
       {isPortrait && (
         <div className="niveis-portrait-warning">
           <div className="niveis-portrait-message">
