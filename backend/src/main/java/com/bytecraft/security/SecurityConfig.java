@@ -17,31 +17,47 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
-            .csrf(csrf -> csrf.disable()) // desativa CSRF apenas para testes com front separado
+            .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
+
+                // 🔓 LIBERAR O FRONT React (HTML + JS + CSS)
+                .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "/favicon.ico").permitAll()
+
+                // 🔓 LIBERAR SUAS APIs
                 .requestMatchers("/api/alunos/**").permitAll()
                 .requestMatchers("/api/professores/**").permitAll()
-                .requestMatchers("/api/salas/**").permitAll() // libera endpoints do front
+                .requestMatchers("/api/salas/**").permitAll()
+                .requestMatchers("/api/perguntas/**").permitAll()
+
+                // 🔒 QUALQUER OUTRO ENDPOINT (ex: /admin)
                 .anyRequest().authenticated()
             );
+
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3030")); // front React
-        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*")); // permite todos os headers
-        configuration.setAllowCredentials(true); // necessário para POST
+
+        // 🔓 ACEITAR FRONT DEV + FRONT NO WAR
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3030", // React dev server
+                "http://localhost:8080"  // React empacotado no WAR
+        ));
+
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
-    // <<< ADICIONE ESTE BEAN
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

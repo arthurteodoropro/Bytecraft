@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react";
+// Niveis.tsx
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getNiveis, registrarNivel } from "../api/api";
 import type { Aluno as AlunoType } from "../types";
+import {useSound} from "../hooks/useSounds";
 import "./styles/Niveis.css";
+
+import backgroundNiveis from "../assets/backgrounds/background_niveis.png";
+import voltarIcon from "../assets/bottons/botao_voltar.png";
 
 interface NiveisProps {
   aluno: AlunoType | null;
@@ -13,6 +18,26 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
   const [niveis, setNiveis] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isPortrait, setIsPortrait] = useState(false);
+  const { playClick } = useSound();
+
+  useEffect(() => {
+    const checkOrientation = () => {
+      const isMobile = window.innerWidth <= 768;
+      setIsPortrait(isMobile && window.innerHeight > window.innerWidth);
+    };
+
+    checkOrientation();
+    window.addEventListener("resize", checkOrientation);
+    window.addEventListener("orientationchange", () => {
+      setTimeout(checkOrientation, 100);
+    });
+
+    return () => {
+      window.removeEventListener("resize", checkOrientation);
+      window.removeEventListener("orientationchange", checkOrientation);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchNiveis = async () => {
@@ -23,7 +48,6 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
         setError(null);
       } catch (err) {
         setError((err as Error).message);
-        console.error("Erro ao carregar níveis:", err);
       } finally {
         setLoading(false);
       }
@@ -33,31 +57,34 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
   }, []);
 
   const handleVoltar = () => {
+    playClick();
     navigate("/aluno");
   };
 
   const selecionarNivel = async (nivel: string) => {
+    playClick();
     try {
       if (!aluno?.apelido || !aluno?.codigoSala) {
         alert("Aluno ou código da sala não identificado. Faça login novamente.");
         navigate("/aluno");
         return;
       }
-  
+
       setLoading(true);
       const atualizado = await registrarNivel(aluno.apelido, nivel, aluno.codigoSala!);
-  
+
+      localStorage.setItem("nivelSelecionado", nivel);
+
       const alunoAtualizado = { ...aluno, nivel: atualizado.nivel };
-  
-      navigate("/fases", { 
-        state: { 
+
+      navigate("/fases", {
+        state: {
           nivel,
           aluno: alunoAtualizado
-        } 
+        }
       });
     } catch (err) {
       alert("Erro: " + (err as Error).message);
-      console.error("Erro ao atualizar nível:", err);
     } finally {
       setLoading(false);
     }
@@ -71,7 +98,7 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
     } else if (nivel.includes("dificil")) {
       return "niveis-btn-dificil";
     }
-    
+
     return "";
   };
 
@@ -88,9 +115,25 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
 
   if (loading) {
     return (
-      <div className="niveis-isolated-container">
+      <div
+        className="niveis-isolated-container"
+        style={{
+          backgroundImage: backgroundNiveis ? `url(${backgroundNiveis})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {isPortrait && (
+          <div className="niveis-portrait-warning">
+            <div className="niveis-portrait-message">
+              <p>📱 Vire o telefone para a posição deitada! 🔄</p>
+            </div>
+          </div>
+        )}
+
         <button className="niveis-btn-voltar" onClick={handleVoltar}>
-          <img src="src/assets/bottons/botao_voltar.png" alt="Voltar" />
+          <img src={voltarIcon || undefined} alt="Voltar" />
         </button>
         <div className="niveis-button-group">
           <p>Carregando níveis...</p>
@@ -101,13 +144,29 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
 
   if (error) {
     return (
-      <div className="niveis-isolated-container">
+      <div
+        className="niveis-isolated-container"
+        style={{
+          backgroundImage: backgroundNiveis ? `url(${backgroundNiveis})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {isPortrait && (
+          <div className="niveis-portrait-warning">
+            <div className="niveis-portrait-message">
+              <p>📱 Vire o telefone para a posição deitada! 🔄</p>
+            </div>
+          </div>
+        )}
+
         <button className="niveis-btn-voltar" onClick={handleVoltar}>
-          <img src="src/assets/bottons/botao_voltar.png" alt="Voltar" />
+          <img src={voltarIcon || undefined} alt="Voltar" />
         </button>
         <div className="niveis-button-group">
           <p style={{ color: 'red' }}>Erro: {error}</p>
-          <button onClick={() => window.location.reload()}>
+          <button className="niveis-btn-facil" onClick={() => window.location.reload()}>
             Tentar Novamente
           </button>
         </div>
@@ -116,9 +175,25 @@ const Niveis: React.FC<NiveisProps> = ({ aluno }) => {
   }
 
   return (
-    <div className="niveis-isolated-container">
+    <div
+      className="niveis-isolated-container"
+      style={{
+        backgroundImage: backgroundNiveis ? `url(${backgroundNiveis})` : undefined,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {isPortrait && (
+        <div className="niveis-portrait-warning">
+          <div className="niveis-portrait-message">
+            <p>📱 Vire o telefone para a posição deitada! 🔄</p>
+          </div>
+        </div>
+      )}
+
       <button className="niveis-btn-voltar" onClick={handleVoltar}>
-        <img src="src/assets/bottons/botao_voltar.png" alt="Voltar" />
+        <img src={voltarIcon || undefined} alt="Voltar" />
       </button>
       <div className="niveis-button-group">
         {niveis.length > 0 ? (

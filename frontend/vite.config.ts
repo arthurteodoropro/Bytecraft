@@ -1,8 +1,10 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  base: './',
   server: {
     port: 3030, // Mantém na 8081 (conforme configurado no Spring Security)
     open: true,
@@ -13,5 +15,14 @@ export default defineConfig({
         secure: false,
       }
     }
-  }
+  },
+  test: {
+    globals: true,
+    environment: 'node',
+    include: ['src/tests/**/*.test.ts', 'tests/**/*.test.ts'],
+  },
+  build: {
+    outDir: '../backend/src/main/resources/static', 
+    emptyOutDir: true, 
+  },
 })

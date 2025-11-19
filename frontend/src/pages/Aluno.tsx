@@ -1,22 +1,14 @@
+// Aluno.tsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Aluno as AlunoType } from "../types";
+import { useSound } from "../hooks/useSounds";
 import "./styles/Aluno.css";
 
 const API_BASE_URL = "http://localhost:8080/api";
 
-const safeUrl = (relPath: string) => {
-  try {
-    return new URL(relPath, import.meta.url).href;
-  } catch (err) {
-    console.error("Erro ao resolver asset:", relPath, err);
-    return "";
-  }
-};
-
-// Ajuste os caminhos relativos conforme a posição deste arquivo
-const backgroundAluno = safeUrl("../assets/backgrounds/background_aluno.png");
-const voltarIcon = safeUrl("../assets/bottons/botao_voltar.png");
+import backgroundAluno from "../assets/backgrounds/background_aluno.png";
+import voltarIcon from "../assets/bottons/botao_voltar.png";
 
 interface AlunoProps {
   setAluno: (aluno: AlunoType) => void;
@@ -29,7 +21,8 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
   const [loading, setLoading] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
 
-  // Verificar orientação da tela
+  const { playClick } = useSound();
+
   useEffect(() => {
     const checkOrientation = () => {
       const isMobile = window.innerWidth <= 768;
@@ -37,27 +30,31 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
     };
 
     checkOrientation();
-    window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', () => {
-      // Pequeno delay para aguardar a mudança completa da orientação
+    window.addEventListener("resize", checkOrientation);
+    window.addEventListener("orientationchange", () => {
       setTimeout(checkOrientation, 100);
     });
-    
+
     return () => {
-      window.removeEventListener('resize', checkOrientation);
-      window.removeEventListener('orientationchange', checkOrientation);
+      window.removeEventListener("resize", checkOrientation);
+      window.removeEventListener("orientationchange", checkOrientation);
     };
   }, []);
 
-  // DEBUG: veja no console a URL resolvida
-  console.log("backgroundAluno =>", backgroundAluno);
-  console.log("voltarIcon =>", voltarIcon);
-
-  const handleVoltar = () => navigate("/");
+  const handleVoltar = () => {
+    playClick();
+    navigate("/");
+  };
 
   const handleComecar = async () => {
+    playClick();
     if (!nome.trim()) return alert("Apelido é obrigatório");
     if (!nomeTurma.trim()) return alert("Código da sala é obrigatório");
+
+    const codigoSala = parseInt(nomeTurma.trim(), 10);
+    if (isNaN(codigoSala) || codigoSala < 0 || codigoSala > 127) {
+      return alert("Sala não encontrada");
+    }
 
     try {
       setLoading(true);
@@ -70,8 +67,7 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        const msg = data?.erro || JSON.stringify(data) || `Erro no login: ${response.status}`;
-        throw new Error(msg);
+        throw new Error("Sala não encontrada");
       }
 
       setAluno({
@@ -83,7 +79,7 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
 
       navigate("/niveis");
     } catch (err) {
-      alert("Erro no login ou vinculação: " + (err as Error).message);
+      alert("Sala não encontrada");
     } finally {
       setLoading(false);
     }
@@ -103,16 +99,19 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Mensagem para orientação vertical */}
       {isPortrait && (
         <div className="aluno-portrait-warning">
           <div className="aluno-portrait-message">
-            <p>📱 Para melhor experiência, vire o telefone para a posição deitada! 🔄</p>
+            <p>📱 Vire o telefone para a posição deitada! 🔄</p>
           </div>
         </div>
       )}
 
-      <button className="aluno-btn-voltar" onClick={handleVoltar} aria-label="Voltar">
+      <button
+        className="aluno-btn-voltar"
+        onClick={handleVoltar}
+        aria-label="Voltar"
+      >
         <img src={voltarIcon || undefined} alt="Voltar" />
       </button>
 
@@ -132,10 +131,10 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
         </div>
 
         <div className="aluno-input-group">
-          <label className="aluno-input-label">NOME DA TURMA</label>
+          <label className="aluno-input-label">CÓDIGO DA TURMA</label>
           <input
             type="text"
-            placeholder="Digite o nome da turma..."
+            placeholder="Digite o código da turma..."
             value={nomeTurma}
             onChange={(e) => setNomeTurma(e.target.value)}
             className="aluno-turma-input"
@@ -149,7 +148,7 @@ const Aluno: React.FC<AlunoProps> = ({ setAluno }) => {
           className="aluno-btn-comecar"
           onClick={handleComecar}
           disabled={loading}
-          aria-label={loading ? 'Carregando...' : 'Começar'}
+          aria-label={loading ? "Carregando..." : "Começar"}
         >
           {loading ? "Carregando..." : "COMEÇAR"}
         </button>
